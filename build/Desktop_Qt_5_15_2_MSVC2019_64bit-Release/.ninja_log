@@ -1,0 +1,17 @@
+# ninja log v5
+2	264	7564919524697706	build.ninja	6ff50fbcc571183c
+5	208	7565935055726430	server_autogen/timestamp	436d127a3980e15
+5	208	7565935055726430	server_autogen/mocs_compilation.cpp	436d127a3980e15
+5	208	7565935055726430	E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/server_autogen/timestamp	436d127a3980e15
+5	208	7565935055726430	E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/server_autogen/mocs_compilation.cpp	436d127a3980e15
+209	1776	7565935086163075	CMakeFiles/server.dir/mainwindow.cpp.obj	345a3eee8de1820
+286	1223	7565904812766842	CMakeFiles/server.dir/server_autogen/mocs_compilation.cpp.obj	43c6fcbf6cee080a
+290	1220	7565904812746841	CMakeFiles/server.dir/main.cpp.obj	4ce8fd85e9c7b344
+1776	1982	7565935087960278	server.exe	d7c5285f2a45650d
+190	748	7564962053285661	CMakeFiles/server.dir/discoverydevice.cpp.obj	88a717bd2172f910
+5	204	7565945570376579	server_autogen/timestamp	436d127a3980e15
+5	204	7565945570376579	server_autogen/mocs_compilation.cpp	436d127a3980e15
+5	204	7565945570376579	E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/server_autogen/timestamp	436d127a3980e15
+5	204	7565945570376579	E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/server_autogen/mocs_compilation.cpp	436d127a3980e15
+206	1740	7565945599228263	CMakeFiles/server.dir/mainwindow.cpp.obj	345a3eee8de1820
+1741	1961	7565945601102262	server.exe	d7c5285f2a45650d
