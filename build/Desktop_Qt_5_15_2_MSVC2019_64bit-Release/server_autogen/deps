@@ -1,0 +1,153 @@
+server_autogen/timestamp: \
+	D:/Program\ Files/CMake/share/cmake-3.30/Modules/CMakeCXXInformation.cmake \
+	D:/Program\ Files/CMake/share/cmake-3.30/Modules/CMakeCommonLanguageInclude.cmake \
+	D:/Program\ Files/CMake/share/cmake-3.30/Modules/CMakeGenericSystem.cmake \
+	D:/Program\ Files/CMake/share/cmake-3.30/Modules/CMakeInitializeConfigs.cmake \
+	D:/Program\ Files/CMake/share/cmake-3.30/Modules/CMakeLanguageInformation.cmake \
+	D:/Program\ Files/CMake/share/cmake-3.30/Modules/CMakeParseArguments.cmake \
+	D:/Program\ Files/CMake/share/cmake-3.30/Modules/CMakeRCInformation.cmake \
+	D:/Program\ Files/CMake/share/cmake-3.30/Modules/CMakeSystemSpecificInformation.cmake \
+	D:/Program\ Files/CMake/share/cmake-3.30/Modules/CMakeSystemSpecificInitialize.cmake \
+	D:/Program\ Files/CMake/share/cmake-3.30/Modules/Compiler/CMakeCommonCompilerMacros.cmake \
+	D:/Program\ Files/CMake/share/cmake-3.30/Modules/Compiler/MSVC-CXX.cmake \
+	D:/Program\ Files/CMake/share/cmake-3.30/Modules/Compiler/MSVC.cmake \
+	D:/Program\ Files/CMake/share/cmake-3.30/Modules/GNUInstallDirs.cmake \
+	D:/Program\ Files/CMake/share/cmake-3.30/Modules/Platform/Windows-Initialize.cmake \
+	D:/Program\ Files/CMake/share/cmake-3.30/Modules/Platform/Windows-MSVC-CXX.cmake \
+	D:/Program\ Files/CMake/share/cmake-3.30/Modules/Platform/Windows-MSVC.cmake \
+	D:/Program\ Files/CMake/share/cmake-3.30/Modules/Platform/Windows.cmake \
+	D:/Program\ Files/CMake/share/cmake-3.30/Modules/Platform/WindowsPaths.cmake \
+	E:/CodeProject/202412/udp/server/CMakeLists.txt \
+	E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/.qtc/package-manager/auto-setup.cmake \
+	E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/CMakeFiles/3.30.0-rc3/CMakeCXXCompiler.cmake \
+	E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/CMakeFiles/3.30.0-rc3/CMakeRCCompiler.cmake \
+	E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/CMakeFiles/3.30.0-rc3/CMakeSystem.cmake \
+	E:/CodeProject/202412/udp/server/discoverydevice.cpp \
+	E:/CodeProject/202412/udp/server/discoverydevice.h \
+	E:/CodeProject/202412/udp/server/main.cpp \
+	E:/CodeProject/202412/udp/server/mainwindow.cpp \
+	E:/CodeProject/202412/udp/server/mainwindow.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/QObject \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qalgorithms.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qarraydata.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qatomic.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qbasicatomic.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qbytearray.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qbytearraylist.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qchar.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qcompilerdetection.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qconfig.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qcontainerfwd.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qcontainertools_impl.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qdatastream.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qflags.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qglobal.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qglobalstatic.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qhash.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qhashfunctions.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qiodevice.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qiterator.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qline.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qlist.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qlogging.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qmargins.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qmetatype.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qmutex.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qnamespace.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qnumeric.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qobject.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qobject_impl.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qobjectdefs.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qobjectdefs_impl.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qpair.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qpoint.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qprocessordetection.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qrect.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qrefcount.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qregexp.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qscopedpointer.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qshareddata.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qsharedpointer.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qsharedpointer_impl.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qsize.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qstring.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qstringalgorithms.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qstringlist.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qstringliteral.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qstringmatcher.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qstringview.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qsysinfo.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qsystemdetection.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qtcore-config.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qtypeinfo.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qvarlengtharray.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qvector.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qversiontagging.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qbrush.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qcolor.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qcursor.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qfont.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qfontinfo.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qfontmetrics.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qicon.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qimage.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qkeysequence.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qmatrix.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qpaintdevice.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qpalette.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qpixelformat.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qpixmap.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qpolygon.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qregion.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qrgb.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qrgba64.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qtgui-config.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qtguiglobal.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qtransform.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qwindowdefs.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qwindowdefs_win.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtWidgets/QMainWindow \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtWidgets/qmainwindow.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtWidgets/qsizepolicy.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtWidgets/qtabwidget.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtWidgets/qtwidgets-config.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtWidgets/qtwidgetsglobal.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtWidgets/qwidget.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5/Qt5Config.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5/Qt5ConfigVersion.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5/Qt5ModuleLocation.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Core/Qt5CoreConfig.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Core/Qt5CoreConfigExtras.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Core/Qt5CoreConfigExtrasMkspecDir.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Core/Qt5CoreConfigVersion.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Core/Qt5CoreMacros.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5GuiConfig.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5GuiConfigExtras.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5GuiConfigVersion.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5Gui_QGifPlugin.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5Gui_QICNSPlugin.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5Gui_QICOPlugin.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5Gui_QJpegPlugin.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5Gui_QMinimalIntegrationPlugin.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5Gui_QOffscreenIntegrationPlugin.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5Gui_QSvgIconPlugin.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5Gui_QSvgPlugin.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5Gui_QTgaPlugin.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5Gui_QTiffPlugin.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5Gui_QTuioTouchPlugin.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5Gui_QWbmpPlugin.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5Gui_QWebGLIntegrationPlugin.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5Gui_QWebpPlugin.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5Gui_QWindowsDirect2DIntegrationPlugin.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5Gui_QWindowsIntegrationPlugin.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Gui/Qt5Gui_QXdgDesktopPortalThemePlugin.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Network/Qt5NetworkConfig.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Network/Qt5NetworkConfigVersion.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Network/Qt5Network_QGenericEnginePlugin.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Widgets/Qt5WidgetsConfig.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Widgets/Qt5WidgetsConfigExtras.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Widgets/Qt5WidgetsConfigVersion.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Widgets/Qt5WidgetsMacros.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Widgets/Qt5Widgets_QWindowsVistaStylePlugin.cmake \
+	E:/CodeProject/202412/udp/server/mainwindow.ui \
+	D:/Program\ Files/CMake/bin/cmake.exe
