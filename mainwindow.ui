@@ -44,7 +44,7 @@
         <height>16777215</height>
        </size>
       </property>
-      <widget class="QLineEdit" name="lineEditDirShared">
+      <widget class="QLineEdit" name="lineEditDirShare">
        <property name="geometry">
         <rect>
          <x>7</x>
@@ -69,11 +69,11 @@
         <bool>true</bool>
        </property>
       </widget>
-      <widget class="QPushButton" name="pushButtonShared">
+      <widget class="QPushButton" name="pushButtonShare">
        <property name="geometry">
         <rect>
-         <x>228</x>
-         <y>50</y>
+         <x>180</x>
+         <y>100</y>
          <width>80</width>
          <height>30</height>
         </rect>
@@ -103,8 +103,8 @@
       <widget class="QPushButton" name="pushButtonSelect">
        <property name="geometry">
         <rect>
-         <x>314</x>
-         <y>50</y>
+         <x>50</x>
+         <y>100</y>
          <width>80</width>
          <height>30</height>
         </rect>
@@ -131,11 +131,11 @@
         <string>选择</string>
        </property>
       </widget>
-      <widget class="QPushButton" name="pushButtonSharedCancel">
+      <widget class="QPushButton" name="pushButtonDeleteShare">
        <property name="geometry">
         <rect>
-         <x>140</x>
-         <y>50</y>
+         <x>300</x>
+         <y>100</y>
          <width>80</width>
          <height>30</height>
         </rect>
@@ -160,6 +160,68 @@
        </property>
        <property name="text">
         <string>取消共享</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButtonNet2Local">
+       <property name="geometry">
+        <rect>
+         <x>180</x>
+         <y>270</y>
+         <width>80</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>80</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>80</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>映射至本地</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButtonNetPC">
+       <property name="geometry">
+        <rect>
+         <x>180</x>
+         <y>190</y>
+         <width>80</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>80</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>80</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>共享的PC</string>
        </property>
       </widget>
      </widget>
