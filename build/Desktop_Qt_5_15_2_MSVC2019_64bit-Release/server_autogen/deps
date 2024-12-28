@@ -22,11 +22,13 @@ server_autogen/timestamp: \
 	E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/CMakeFiles/3.30.0-rc3/CMakeCXXCompiler.cmake \
 	E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/CMakeFiles/3.30.0-rc3/CMakeRCCompiler.cmake \
 	E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/CMakeFiles/3.30.0-rc3/CMakeSystem.cmake \
-	E:/CodeProject/202412/udp/server/discoverydevice.cpp \
-	E:/CodeProject/202412/udp/server/discoverydevice.h \
 	E:/CodeProject/202412/udp/server/main.cpp \
 	E:/CodeProject/202412/udp/server/mainwindow.cpp \
 	E:/CodeProject/202412/udp/server/mainwindow.h \
+	E:/CodeProject/202412/udp/server/sharedirectory.cpp \
+	E:/CodeProject/202412/udp/server/sharedirectory.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/QFileInfoList \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/QMap \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/QObject \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qalgorithms.h \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qarraydata.h \
@@ -40,6 +42,9 @@ server_autogen/timestamp: \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qcontainerfwd.h \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qcontainertools_impl.h \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qdatastream.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qfile.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qfiledevice.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qfileinfo.h \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qflags.h \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qglobal.h \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qglobalstatic.h \
@@ -50,6 +55,7 @@ server_autogen/timestamp: \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qline.h \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qlist.h \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qlogging.h \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qmap.h \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qmargins.h \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qmetatype.h \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qmutex.h \
@@ -116,6 +122,8 @@ server_autogen/timestamp: \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5/Qt5Config.cmake \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5/Qt5ConfigVersion.cmake \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5/Qt5ModuleLocation.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Concurrent/Qt5ConcurrentConfig.cmake \
+	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Concurrent/Qt5ConcurrentConfigVersion.cmake \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Core/Qt5CoreConfig.cmake \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Core/Qt5CoreConfigExtras.cmake \
 	F:/Environment/Qt5/5.15.2/msvc2019_64/lib/cmake/Qt5Core/Qt5CoreConfigExtrasMkspecDir.cmake \

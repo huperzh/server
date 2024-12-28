@@ -38,7 +38,7 @@ else()
     else()
         add_executable(server
             ${PROJECT_SOURCES}
-            discoverydevice.h discoverydevice.cpp
+            sharedirectory.h sharedirectory.cpp
         )
     endif()
 endif()

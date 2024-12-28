@@ -1,4 +1,5 @@
 E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/server_autogen/EWIEGA46WW/moc_mainwindow.cpp: E:/CodeProject/202412/udp/server/mainwindow.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/QMap \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qalgorithms.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qarraydata.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qatomic.h \
@@ -21,6 +22,7 @@ E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qline.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qlist.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qlogging.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qmap.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qmargins.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qmetatype.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qmutex.h \

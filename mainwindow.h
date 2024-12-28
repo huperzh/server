@@ -20,6 +20,10 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void getCurrentDevice();
+    void setFolder(const QString &remotePath, const QString &localDrive);
+    QString findAvailableDriveLetter();
+    void listNetworkDevice();
+    bool isLocalHost(const QString &ipAddr);
 
 private slots:
     void on_pushButtonSendMessage_clicked();
@@ -35,6 +39,8 @@ private slots:
     void setNTFSPermissions(const QString& folderPath);
 
     void on_pushButtonNetPC_clicked();
+
+    void on_checkBoxEnableBroad_clicked(bool checked);
 
 private:
     void getNetPC();

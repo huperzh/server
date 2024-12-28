@@ -224,6 +224,19 @@
         <string>共享的PC</string>
        </property>
       </widget>
+      <widget class="QCheckBox" name="checkBoxEnableBroad">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>390</y>
+         <width>101</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>开启广播</string>
+       </property>
+      </widget>
      </widget>
     </item>
     <item>

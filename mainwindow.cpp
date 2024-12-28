@@ -5,12 +5,8 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QNetworkInterface>
-
-
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
-
-
 
 #include <QUrl>
 #include <QFileDialog>
@@ -37,37 +33,24 @@ MainWindow::MainWindow(QWidget *parent) :
             QHostAddress host;
             quint16 port;
             socket->readDatagram(data.data(), data.size(), &host, &port);
+            int v4IP = host.toIPv4Address();
+            QHostAddress hostAddress(v4IP);
+            QString strIPV4 = hostAddress.toString();
+            if (isLocalHost(strIPV4)) {
+                break;
+            }
+
+            qDebug() << "data = " << data;
             QString time = QDateTime::currentDateTime().toString("yyyy-mm-dd hh:mm:ss.zzz");
             QByteArray text = CMD_RECV_DISP.arg(time).arg(QHostAddress(host.toIPv4Address()).toString()).arg(port).toLatin1();
             ui->textEditLog->append(text);
+            ui->textEditLog->append(data);
             qDebug() << "Host:" << host;  // 输出 "192.168.0.10"
             qDebug() << "Port:" << port;  // 输出 502
+            QDir hostNameDir(data);
+            qDebug() << "hostNameDir:" << hostNameDir << hostNameDir.exists();  // 输出 502
         }
     });
-    QUrl url = QUrl::fromUserInput("192.168.72.1:502");
-    qDebug() << "Host:" << url.host();  // 输出 "192.168.0.10"
-    qDebug() << "Port:" << url.port();  // 输出 502
-
-    // 获取所有网络接口
-    QList<QNetworkInterface> interfaces = QNetworkInterface::allInterfaces();
-
-    for (const QNetworkInterface &interface : interfaces) {
-        // 检查接口是否激活并正在运行
-        if (interface.flags().testFlag(QNetworkInterface::IsUp) &&
-            interface.flags().testFlag(QNetworkInterface::IsRunning)) {
-
-            // 遍历接口的地址列表
-            QList<QNetworkAddressEntry> entries = interface.addressEntries();
-            for (const QNetworkAddressEntry &entry : entries) {
-                QHostAddress ip = entry.ip();
-                // 只处理 IPv4 地址
-                if (ip.protocol() == QAbstractSocket::IPv4Protocol) {
-                    qDebug() << "Interface:" << interface.humanReadableName();
-                    qDebug() << "IP Address:" << ip.toString();
-                }
-            }
-        }
-    }
 
     getCurrentDevice();
 }
@@ -75,6 +58,30 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+bool MainWindow::isLocalHost(const QString &ipAddr)
+{
+    auto interfaces = QNetworkInterface::allInterfaces();
+    for (const QNetworkInterface &interface : interfaces) {
+        if (interface.flags().testFlag(QNetworkInterface::IsUp) &&
+            interface.flags().testFlag(QNetworkInterface::IsRunning)) {
+            QList<QNetworkAddressEntry> entries = interface.addressEntries();
+            for (const QNetworkAddressEntry &entry : entries) {
+                QHostAddress ip = entry.ip();
+                if (ip.protocol() == QAbstractSocket::IPv4Protocol) {
+                    qDebug() << "Interface:" << interface.humanReadableName();
+                    qDebug() << "IP Address:" << ip.toString();
+                    qDebug() << "ipAddr:" << ipAddr;
+                    if (ip.toString() == ipAddr) {
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+
+    return false;
 }
 
 #include <QHostInfo>
@@ -202,6 +209,9 @@ void MainWindow::setNTFSPermissions(const QString& folderPath) {
 
 void MainWindow::on_pushButtonShare_clicked()
 {
+    QDir hostName("\\DESKTOP-FNNNJ3M");
+    setFolder(hostName.absoluteFilePath(ui->lineEditDirShare->text()), "Z:");
+    return;
     SHARE_INFO_2 si;
     DWORD parm_err;
     // 设置共享信息
@@ -342,5 +352,120 @@ void MainWindow::on_pushButtonNetPC_clicked()
 {
     std::cout << "queryShares" << std::endl;
     /* C++ 中，为了表示一个反斜杠，需要用\\ */
-    queryShares(L"\\\\Szmcs11175");
+    // queryShares(L"\\\\Szmcs11175");
+    listNetworkDevice();
 }
+
+
+#include <windows.h>
+#include <lm.h>
+#include <iostream>
+#include <QDebug>
+
+void MainWindow::listNetworkDevice() {
+    SERVER_INFO_101 *pBuf = nullptr;
+    DWORD dwEntriesRead = 0;
+    DWORD dwTotalEntries = 0;
+    DWORD dwResumeHandle = 0;
+    NET_API_STATUS status = NetServerEnum(
+        NULL,                // 获取本地网络计算机
+        101,                 // 获取计算机的信息等级
+        (LPBYTE*)&pBuf,      // 服务器信息结构体
+        MAX_PREFERRED_LENGTH,
+        &dwEntriesRead,
+        &dwTotalEntries,
+        SV_TYPE_WORKSTATION | SV_TYPE_SERVER,  // 过滤工作站和服务器
+        NULL,                // 指定的域（如果为空，查询所有）
+        &dwResumeHandle      // 分页查询时的句柄
+        );
+
+    if (status == NERR_Success) {
+        std::cout << "Found " << dwEntriesRead << " computers:\n";
+        for (DWORD i = 0; i < dwEntriesRead; ++i) {
+            qDebug() << "Computer: " << pBuf[i].sv101_name;
+        }
+    } else {
+        qDebug() << "Failed to enumerate computers. Error: " << status;
+    }
+
+    if (pBuf != nullptr) {
+        NetApiBufferFree(pBuf);
+    }
+}
+
+#include <windows.h>
+#include <lm.h>
+#include <winnetwk.h>
+#include <QDebug>
+#include <QString>
+#include <QDir>
+#include <iostream>
+
+#pragma comment(lib, "Mpr.lib")
+void MainWindow::setFolder(const QString &remotePath, const QString &localDrive) {
+    if (remotePath.isEmpty()) {
+        qDebug() << "Remote path is empty.";
+        return;
+    }
+    qDebug() << "remotePath. = " << remotePath;
+
+    // 检查是否已指定驱动器号
+    QString driveLetter = localDrive.isEmpty() ? findAvailableDriveLetter() : localDrive;
+
+    if (driveLetter.isEmpty()) {
+        qDebug() << "No available drive letter.";
+        return;
+    }
+    std::string strdriveLetter = driveLetter.toStdString();
+    // 配置 NETRESOURCE 结构体
+    NETRESOURCE nr;
+    ZeroMemory(&nr, sizeof(NETRESOURCE));
+    nr.dwType = RESOURCETYPE_DISK; // 资源类型：磁盘
+    nr.lpLocalName = driveLetter.toLatin1().data(); // 本地驱动器号
+    nr.lpRemoteName = driveLetter.toLatin1().data(); // 远程共享路径
+    nr.lpRemoteName = driveLetter.toLocal8Bit().data(); // 远程共享路径
+    nr.lpProvider = NULL;
+
+    // 映射驱动器
+    DWORD result = WNetAddConnection2(&nr, NULL, NULL, CONNECT_TEMPORARY);
+    if (result == NO_ERROR) {
+        qDebug() << "Drive mapped successfully:" << driveLetter;
+    } else {
+        qDebug() << "Failed to map drive. Error code:" << result;
+    }
+}
+
+QString MainWindow::findAvailableDriveLetter() {
+    // 从 Z: 开始尝试，找到第一个可用的驱动器号
+    for (char drive = 'Z'; drive >= 'A'; --drive) {
+        QString drivePath = QString("%1:").arg(drive);
+        UINT driveType = GetDriveType(reinterpret_cast<LPCSTR>(drivePath.toStdString().c_str()));
+        if (driveType == DRIVE_NO_ROOT_DIR) {
+            return drivePath;
+        }
+    }
+    return QString(); // 未找到可用驱动器号
+}
+
+void MainWindow::on_checkBoxEnableBroad_clicked(bool checked)
+{
+    if(checked) {
+        QString hostName = QHostInfo::localHostName();
+        QDir hostNameDir("\\\\" + hostName);
+        qDebug() << "hostNameDir" << hostNameDir.path();
+
+        qDebug() << "Host name:" << hostName;
+        qDebug() << "Shared dir:" << hostNameDir.entryInfoList();
+        qDebug() << "Shared dir:" << hostNameDir.entryList();
+
+        QString broadcast("255.255.255.255");
+        int port(502);
+        int size = socket->writeDatagram(hostNameDir.path().toLatin1(), QHostAddress(broadcast), port);
+        if (-1 == size) {
+            qDebug() << "writeDatagram error";
+        } else {
+            qDebug() << "size " << size;
+        }
+    }
+}
+

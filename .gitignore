@@ -1,4 +1,4 @@
-build/
+build/*
 CGraph/
 .gitmodules
 *.dll

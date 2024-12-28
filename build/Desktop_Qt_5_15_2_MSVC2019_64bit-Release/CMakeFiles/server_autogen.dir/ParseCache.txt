@@ -2,6 +2,7 @@
 E:/CodeProject/202412/udp/server/mainwindow.h
  mmc:Q_OBJECT
  mdp:E:/CodeProject/202412/udp/server/mainwindow.h
+ mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/QMap
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qalgorithms.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qarraydata.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qatomic.h
@@ -24,6 +25,7 @@ E:/CodeProject/202412/udp/server/mainwindow.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qline.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qlist.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qlogging.h
+ mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qmap.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qmargins.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qmetatype.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qmutex.h
@@ -87,12 +89,10 @@ E:/CodeProject/202412/udp/server/mainwindow.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtWidgets/qtwidgets-config.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtWidgets/qtwidgetsglobal.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtWidgets/qwidget.h
-E:/CodeProject/202412/udp/server/mainwindow.cpp
- uic:./ui_mainwindow.h
-E:/CodeProject/202412/udp/server/main.cpp
-E:/CodeProject/202412/udp/server/discoverydevice.h
+E:/CodeProject/202412/udp/server/sharedirectory.h
  mmc:Q_OBJECT
- mdp:E:/CodeProject/202412/udp/server/discoverydevice.h
+ mdp:E:/CodeProject/202412/udp/server/sharedirectory.h
+ mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/QFileInfoList
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/QObject
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qalgorithms.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qarraydata.h
@@ -105,10 +105,15 @@ E:/CodeProject/202412/udp/server/discoverydevice.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qconfig.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qcontainerfwd.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qcontainertools_impl.h
+ mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qfile.h
+ mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qfiledevice.h
+ mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qfileinfo.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qflags.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qglobal.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qglobalstatic.h
+ mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qhash.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qhashfunctions.h
+ mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qiodevice.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qiterator.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qlist.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qlogging.h
@@ -125,6 +130,7 @@ E:/CodeProject/202412/udp/server/discoverydevice.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qrefcount.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qregexp.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qscopedpointer.h
+ mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qshareddata.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qstring.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qstringalgorithms.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qstringlist.h
@@ -138,4 +144,7 @@ E:/CodeProject/202412/udp/server/discoverydevice.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qvarlengtharray.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qvector.h
  mdp:F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qversiontagging.h
-E:/CodeProject/202412/udp/server/discoverydevice.cpp
+E:/CodeProject/202412/udp/server/mainwindow.cpp
+ uic:./ui_mainwindow.h
+E:/CodeProject/202412/udp/server/main.cpp
+E:/CodeProject/202412/udp/server/sharedirectory.cpp
