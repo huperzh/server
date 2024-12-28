@@ -3,6 +3,9 @@
 
 #include <QMap>
 #include <QMainWindow>
+#include <QHostAddress>
+#include "discoverydevice.h"
+#include "udpbroadcast.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -24,6 +27,7 @@ public:
     QString findAvailableDriveLetter();
     void listNetworkDevice();
     bool isLocalHost(const QString &ipAddr);
+    bool win11_os();
 
 private slots:
     void on_pushButtonSendMessage_clicked();
@@ -42,13 +46,18 @@ private slots:
 
     void on_checkBoxEnableBroad_clicked(bool checked);
 
+    void on_pushButtonBroadcastHost_clicked();
+
 private:
     void getNetPC();
+    bool isLocalAddress(const QHostAddress &addr);
 
 private:
     Ui::MainWindow *ui;
-    QUdpSocket *socket;
-    BroadcastHelper *broadcastHelper;
+    QUdpSocket *udpSocket{nullptr};
+    BroadcastHelper *broadcastHelper{nullptr};
     QMap<QString, QString> netNameToPath;
+    DiscoveryDevice discoveryDevice;
+    UDPBroadcast udpBroadCast;
 };
 #endif // MAINWINDOW_H

@@ -9,6 +9,8 @@
 #include "./ui_mainwindow.h"
 
 #include <QUrl>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QFileDialog>
 #define CMD_SEND_DISP QString("[%1]# SEND ASCII TO %2:%3")
 #define CMD_RECV_DISP QString("[%1]# RECV ASCII FROM %2:%3")
@@ -17,35 +19,49 @@
  *      检测局域网内其它工具的共享目录有没有需要的
  *
  */
+quint16 cast_port = 520;
+QHostAddress multicastAddress("239.255.30.51");
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    socket = new QUdpSocket(this);
-    // 绑定到端口502，接收来自该端口的数据包
-    socket->bind(502, QUdpSocket::ShareAddress);  // 使用ShareAddress选项来允许其他应用程序共享该端口
-    connect(socket, &QUdpSocket::readyRead, this, [=](){
-        while(socket->hasPendingDatagrams())
-        {
-            QByteArray data;
-            data.resize(socket->pendingDatagramSize());
-            QHostAddress host;
+    return;
+    discoveryDevice.start(Settings::serverPort());
+    udpSocket = new QUdpSocket(this);
+    udpSocket->setSocketOption(QAbstractSocket::MulticastLoopbackOption, 1);
+    udpSocket->setSocketOption(QAbstractSocket::MulticastTtlOption, 1);
+    bool bindRet = udpSocket->bind(QHostAddress::AnyIPv4, cast_port, QAbstractSocket::ShareAddress | QAbstractSocket::ReuseAddressHint);
+    if (!bindRet) {
+        qDebug() << "Bind failed:" << udpSocket->errorString();
+        return;
+    }
+
+    // // 加入多播组
+    // if (!udpSocket->joinMulticastGroup(multicastAddress)) {
+    //     qDebug() << "Join multicast group failed:" << udpSocket->errorString();
+    //     return;
+    // }
+
+    connect(udpSocket, &QUdpSocket::readyRead, this, [=](){
+        while (udpSocket->hasPendingDatagrams()) {
+            qint64 size = udpSocket->pendingDatagramSize();
+            QByteArray data(size, 0);
+            QHostAddress addr;
             quint16 port;
-            socket->readDatagram(data.data(), data.size(), &host, &port);
-            int v4IP = host.toIPv4Address();
-            QHostAddress hostAddress(v4IP);
-            QString strIPV4 = hostAddress.toString();
-            if (isLocalHost(strIPV4)) {
-                break;
-            }
+            udpSocket->readDatagram(data.data(), data.size(), &addr, &port);
+            QJsonObject object = QJsonDocument::fromJson(data).object();
+            qDebug() << "devicename: " << object.value("devicename").toString();
+            bool enable(true);
+            if (enable && isLocalAddress(addr))
+                continue;
 
             qDebug() << "data = " << data;
             QString time = QDateTime::currentDateTime().toString("yyyy-mm-dd hh:mm:ss.zzz");
-            QByteArray text = CMD_RECV_DISP.arg(time).arg(QHostAddress(host.toIPv4Address()).toString()).arg(port).toLatin1();
+            QByteArray text = CMD_RECV_DISP.arg(time).arg(QHostAddress(addr.toIPv4Address()).toString()).arg(port).toLatin1();
             ui->textEditLog->append(text);
             ui->textEditLog->append(data);
-            qDebug() << "Host:" << host;  // 输出 "192.168.0.10"
+            qDebug() << "Host:" << addr;  // 输出 "192.168.0.10"
             qDebug() << "Port:" << port;  // 输出 502
             QDir hostNameDir(data);
             qDebug() << "hostNameDir:" << hostNameDir << hostNameDir.exists();  // 输出 502
@@ -70,15 +86,24 @@ bool MainWindow::isLocalHost(const QString &ipAddr)
             for (const QNetworkAddressEntry &entry : entries) {
                 QHostAddress ip = entry.ip();
                 if (ip.protocol() == QAbstractSocket::IPv4Protocol) {
-                    qDebug() << "Interface:" << interface.humanReadableName();
-                    qDebug() << "IP Address:" << ip.toString();
-                    qDebug() << "ipAddr:" << ipAddr;
                     if (ip.toString() == ipAddr) {
                         return true;
                     }
                 }
             }
         }
+    }
+
+
+
+    return false;
+}
+
+bool MainWindow::win11_os()
+{
+    QString productVersion = QSysInfo::productVersion(); // Windows 10, Windows 11 等
+    if (productVersion.contains("11")) {
+        return true;
     }
 
     return false;
@@ -104,16 +129,18 @@ void MainWindow::getCurrentDevice()
 
 void MainWindow::on_pushButtonSendMessage_clicked()
 {
-    QString broadcast("255.255.255.255");
-    int port(502);
-    QString time = QDateTime::currentDateTime().toString("yyyy-mm-dd hh:mm:ss.zzz");
-    QByteArray timeMsg = CMD_SEND_DISP.arg(time).arg(broadcast).arg(port).toLatin1();
-    int size = socket->writeDatagram(ui->textEditSendMessage->toPlainText().toLatin1(), QHostAddress(broadcast), port);
-    if (-1 == size) {
-        qDebug() << "writeDatagram error";
-    } else {
-        qDebug() << "size " << size;
-        ui->textEditLog->append(timeMsg + "\n" + ui->textEditSendMessage->toPlainText());
+    if (udpSocket) {
+        QUrl url = QUrl::fromUserInput(ui->lineEditURL->text());
+        QString time = QDateTime::currentDateTime().toString("yyyy-mm-dd hh:mm:ss.zzz");
+        QByteArray timeMsg = CMD_SEND_DISP.arg(time).arg(url.host()).arg(url.port()).toLatin1();
+        qDebug() << url.host() << url.port();
+        int size = udpSocket->writeDatagram(ui->textEditSendMessage->toPlainText().toLatin1(), QHostAddress(url.host()), url.port());
+        if (-1 == size) {
+            qDebug() << "writeDatagram error";
+        } else {
+            qDebug() << "size " << size;
+            ui->textEditLog->append(timeMsg + "\n" + ui->textEditSendMessage->toPlainText());
+        }
     }
 }
 
@@ -149,9 +176,9 @@ void MainWindow::setNTFSPermissions(const QString& folderPath) {
     PSECURITY_DESCRIPTOR sd = NULL;
     // 获取文件夹的现有权限
     LPCSTR path = reinterpret_cast<LPCSTR>(folderPath.toStdString().c_str());
-    DWORD dwRes = GetNamedSecurityInfo(path, SE_FILE_OBJECT, DACL_SECURITY_INFORMATION,
-                                       NULL, NULL, &oldAcl, NULL, &sd);
-
+    // DWORD dwRes = GetNamedSecurityInfo(path, SE_FILE_OBJECT, DACL_SECURITY_INFORMATION,
+    //                                    NULL, NULL, &oldAcl, NULL, &sd);
+    DWORD dwRes = 0;
     if (dwRes != ERROR_SUCCESS) {
         qDebug() << "dwRes code：" << dwRes;
     }
@@ -163,7 +190,7 @@ void MainWindow::setNTFSPermissions(const QString& folderPath) {
     ea.grfAccessMode = SET_ACCESS;
     ea.grfInheritance= NO_INHERITANCE;
     ea.Trustee.TrusteeForm = TRUSTEE_IS_SID;
-    ea.Trustee.ptstrName = "Everyone";
+    //  ea.Trustee.ptstrName = "Everyone";
 
     // 创建新的ACL
     dwRes = SetEntriesInAcl(1, &ea, oldAcl, &newAcl);
@@ -174,8 +201,8 @@ void MainWindow::setNTFSPermissions(const QString& folderPath) {
 
     LPSTR path1 = folderPath.toLatin1().data(); // 转换为 LPSTR
     // 设置新的文件夹权限
-    dwRes = SetNamedSecurityInfo(path1, SE_FILE_OBJECT,
-                                 DACL_SECURITY_INFORMATION, NULL, NULL, newAcl, NULL);
+    // dwRes = SetNamedSecurityInfo(path1, SE_FILE_OBJECT,
+    //                              DACL_SECURITY_INFORMATION, NULL, NULL, newAcl, NULL);
     if (dwRes != ERROR_SUCCESS) {
         qDebug() << "permission set error code：" << dwRes;
     } else {
@@ -215,9 +242,9 @@ void MainWindow::on_pushButtonShare_clicked()
     SHARE_INFO_2 si;
     DWORD parm_err;
     // 设置共享信息
-    si.shi2_netname = L"package";
+    si.shi2_netname = (LMSTR) ("package");
     si.shi2_type = STYPE_DISKTREE; // 磁盘共享
-    si.shi2_remark = L"package";
+    si.shi2_remark =  (LMSTR) ("package");
     si.shi2_permissions = 0; // 权限已被废弃，设置为 0
     si.shi2_max_uses = -1; // 不限制用户数
     si.shi2_current_uses = 0;  // 当前连接的用户数，通常初始化为 0
@@ -418,8 +445,8 @@ void MainWindow::setFolder(const QString &remotePath, const QString &localDrive)
     }
     std::string strdriveLetter = driveLetter.toStdString();
     // 配置 NETRESOURCE 结构体
-    NETRESOURCE nr;
-    ZeroMemory(&nr, sizeof(NETRESOURCE));
+    NETRESOURCEA nr;
+    ZeroMemory(&nr, sizeof(NETRESOURCEA));
     nr.dwType = RESOURCETYPE_DISK; // 资源类型：磁盘
     nr.lpLocalName = driveLetter.toLatin1().data(); // 本地驱动器号
     nr.lpRemoteName = driveLetter.toLatin1().data(); // 远程共享路径
@@ -427,7 +454,7 @@ void MainWindow::setFolder(const QString &remotePath, const QString &localDrive)
     nr.lpProvider = NULL;
 
     // 映射驱动器
-    DWORD result = WNetAddConnection2(&nr, NULL, NULL, CONNECT_TEMPORARY);
+    DWORD result = WNetAddConnection2A(&nr, NULL, NULL, CONNECT_TEMPORARY);
     if (result == NO_ERROR) {
         qDebug() << "Drive mapped successfully:" << driveLetter;
     } else {
@@ -439,7 +466,8 @@ QString MainWindow::findAvailableDriveLetter() {
     // 从 Z: 开始尝试，找到第一个可用的驱动器号
     for (char drive = 'Z'; drive >= 'A'; --drive) {
         QString drivePath = QString("%1:").arg(drive);
-        UINT driveType = GetDriveType(reinterpret_cast<LPCSTR>(drivePath.toStdString().c_str()));
+        LPCSTR path = drivePath.toLatin1().data();
+        UINT driveType = GetDriveTypeA (path);
         if (driveType == DRIVE_NO_ROOT_DIR) {
             return drivePath;
         }
@@ -447,6 +475,8 @@ QString MainWindow::findAvailableDriveLetter() {
     return QString(); // 未找到可用驱动器号
 }
 
+#include <QJsonObject>
+#include <QJsonDocument>
 void MainWindow::on_checkBoxEnableBroad_clicked(bool checked)
 {
     if(checked) {
@@ -458,14 +488,30 @@ void MainWindow::on_checkBoxEnableBroad_clicked(bool checked)
         qDebug() << "Shared dir:" << hostNameDir.entryInfoList();
         qDebug() << "Shared dir:" << hostNameDir.entryList();
 
-        QString broadcast("255.255.255.255");
-        int port(502);
-        int size = socket->writeDatagram(hostNameDir.path().toLatin1(), QHostAddress(broadcast), port);
+        QJsonObject obj;
+        obj.insert("devicename", hostNameDir.absolutePath());
+        int size = udpSocket->writeDatagram(QJsonDocument(obj).toJson(QJsonDocument::Compact), QHostAddress("255.255.255.255"), cast_port);
         if (-1 == size) {
             qDebug() << "writeDatagram error";
         } else {
             qDebug() << "size " << size;
         }
     }
+}
+
+bool MainWindow::isLocalAddress(const QHostAddress &addr)
+{
+    foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {
+        if (addr.isEqual(address)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+void MainWindow::on_pushButtonBroadcastHost_clicked()
+{
+    udpBroadCast.sendHostName();
 }
 

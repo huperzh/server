@@ -79,15 +79,27 @@
 	"HEADERS" : 
 	[
 		[
+			"E:/CodeProject/202412/udp/server/discoverydevice.h",
+			"MU",
+			"EWIEGA46WW/moc_discoverydevice.cpp",
+			null
+		],
+		[
 			"E:/CodeProject/202412/udp/server/mainwindow.h",
 			"MU",
 			"EWIEGA46WW/moc_mainwindow.cpp",
 			null
 		],
 		[
-			"E:/CodeProject/202412/udp/server/sharedirectory.h",
+			"E:/CodeProject/202412/udp/server/settings.h",
 			"MU",
-			"EWIEGA46WW/moc_sharedirectory.cpp",
+			"EWIEGA46WW/moc_settings.cpp",
+			null
+		],
+		[
+			"E:/CodeProject/202412/udp/server/udpbroadcast.h",
+			"MU",
+			"EWIEGA46WW/moc_udpbroadcast.cpp",
 			null
 		]
 	],
@@ -139,9 +151,11 @@
 	"SETTINGS_FILE" : "E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/CMakeFiles/server_autogen.dir/AutogenUsed.txt",
 	"SOURCES" : 
 	[
+		[ "E:/CodeProject/202412/udp/server/discoverydevice.cpp", "MU", null ],
 		[ "E:/CodeProject/202412/udp/server/main.cpp", "MU", null ],
 		[ "E:/CodeProject/202412/udp/server/mainwindow.cpp", "MU", null ],
-		[ "E:/CodeProject/202412/udp/server/sharedirectory.cpp", "MU", null ]
+		[ "E:/CodeProject/202412/udp/server/settings.cpp", "MU", null ],
+		[ "E:/CodeProject/202412/udp/server/udpbroadcast.cpp", "MU", null ]
 	],
 	"UIC_OPTIONS" : [],
 	"UIC_SEARCH_PATHS" : [],

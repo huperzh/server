@@ -1,5 +1,12 @@
 E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/server_autogen/EWIEGA46WW/moc_mainwindow.cpp: E:/CodeProject/202412/udp/server/mainwindow.h \
+  E:/CodeProject/202412/udp/server/discoverydevice.h \
+  E:/CodeProject/202412/udp/server/settings.h \
+  E:/CodeProject/202412/udp/server/udpbroadcast.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/QFileInfoList \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/QMap \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/QObject \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/QString \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/QTime \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qalgorithms.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qarraydata.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qatomic.h \
@@ -11,7 +18,13 @@ E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qconfig.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qcontainerfwd.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qcontainertools_impl.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qcontiguouscache.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qdatastream.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qdatetime.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qdebug.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qfile.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qfiledevice.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qfileinfo.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qflags.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qglobal.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qglobalstatic.h \
@@ -21,6 +34,7 @@ E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qiterator.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qline.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qlist.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qlocale.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qlogging.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qmap.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qmargins.h \
@@ -39,6 +53,7 @@ E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qrefcount.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qregexp.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qscopedpointer.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qset.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qshareddata.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qsharedpointer.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qsharedpointer_impl.h \
@@ -52,7 +67,9 @@ E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qsysinfo.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qsystemdetection.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qtcore-config.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qtextstream.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qtypeinfo.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qvariant.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qvarlengtharray.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qvector.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtCore/qversiontagging.h \
@@ -79,6 +96,18 @@ E:/CodeProject/202412/udp/server/build/Desktop_Qt_5_15_2_MSVC2019_64bit-Release/
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qtransform.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qwindowdefs.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtGui/qwindowdefs_win.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtNetwork/QHostAddress \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtNetwork/QHostInfo \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtNetwork/QNetworkInterface \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtNetwork/QUDPSocket \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtNetwork/QUdpSocket \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtNetwork/qabstractsocket.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtNetwork/qhostaddress.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtNetwork/qhostinfo.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtNetwork/qnetworkinterface.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtNetwork/qtnetwork-config.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtNetwork/qtnetworkglobal.h \
+  F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtNetwork/qudpsocket.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtWidgets/QMainWindow \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtWidgets/qmainwindow.h \
   F:/Environment/Qt5/5.15.2/msvc2019_64/include/QtWidgets/qsizepolicy.h \

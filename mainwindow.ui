@@ -165,8 +165,8 @@
       <widget class="QPushButton" name="pushButtonNet2Local">
        <property name="geometry">
         <rect>
-         <x>180</x>
-         <y>270</y>
+         <x>40</x>
+         <y>190</y>
          <width>80</width>
          <height>30</height>
         </rect>
@@ -196,7 +196,7 @@
       <widget class="QPushButton" name="pushButtonNetPC">
        <property name="geometry">
         <rect>
-         <x>180</x>
+         <x>150</x>
          <y>190</y>
          <width>80</width>
          <height>30</height>
@@ -227,14 +227,45 @@
       <widget class="QCheckBox" name="checkBoxEnableBroad">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>390</y>
+         <x>100</x>
+         <y>300</y>
          <width>101</width>
          <height>21</height>
         </rect>
        </property>
        <property name="text">
         <string>开启广播</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButtonBroadcastHost">
+       <property name="geometry">
+        <rect>
+         <x>280</x>
+         <y>190</y>
+         <width>80</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>80</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>80</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>广播主机</string>
        </property>
       </widget>
      </widget>
@@ -335,7 +366,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit">
+         <widget class="QLineEdit" name="lineEditURL">
           <property name="minimumSize">
            <size>
             <width>250</width>
@@ -343,7 +374,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
            </size>
           </property>
           <property name="text">
-           <string>192.168.0.102 :502</string>
+           <string>192.168.1.200:502</string>
           </property>
          </widget>
         </item>

@@ -76,7 +76,25 @@ build CMakeFiles\server.dir\mainwindow.cpp.obj: CXX_COMPILER__server_unscanned_R
   TARGET_COMPILE_PDB = CMakeFiles\server.dir\
   TARGET_PDB = server.pdb
 
-build CMakeFiles\server.dir\sharedirectory.cpp.obj: CXX_COMPILER__server_unscanned_Release E$:\CodeProject\202412\udp\server\sharedirectory.cpp || cmake_object_order_depends_target_server
+build CMakeFiles\server.dir\discoverydevice.cpp.obj: CXX_COMPILER__server_unscanned_Release E$:\CodeProject\202412\udp\server\discoverydevice.cpp || cmake_object_order_depends_target_server
+  DEFINES = -DQT_CONCURRENT_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB
+  FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD
+  INCLUDES = -IE:\CodeProject\202412\udp\server\build\Desktop_Qt_5_15_2_MSVC2019_64bit-Release\server_autogen\include -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include\QtWidgets -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include\QtGui -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include\QtANGLE -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include\QtCore -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\.\mkspecs\win32-msvc -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include\QtNetwork -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include\QtConcurrent -external:W0
+  OBJECT_DIR = CMakeFiles\server.dir
+  OBJECT_FILE_DIR = CMakeFiles\server.dir
+  TARGET_COMPILE_PDB = CMakeFiles\server.dir\
+  TARGET_PDB = server.pdb
+
+build CMakeFiles\server.dir\settings.cpp.obj: CXX_COMPILER__server_unscanned_Release E$:\CodeProject\202412\udp\server\settings.cpp || cmake_object_order_depends_target_server
+  DEFINES = -DQT_CONCURRENT_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB
+  FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD
+  INCLUDES = -IE:\CodeProject\202412\udp\server\build\Desktop_Qt_5_15_2_MSVC2019_64bit-Release\server_autogen\include -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include\QtWidgets -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include\QtGui -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include\QtANGLE -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include\QtCore -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\.\mkspecs\win32-msvc -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include\QtNetwork -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include\QtConcurrent -external:W0
+  OBJECT_DIR = CMakeFiles\server.dir
+  OBJECT_FILE_DIR = CMakeFiles\server.dir
+  TARGET_COMPILE_PDB = CMakeFiles\server.dir\
+  TARGET_PDB = server.pdb
+
+build CMakeFiles\server.dir\udpbroadcast.cpp.obj: CXX_COMPILER__server_unscanned_Release E$:\CodeProject\202412\udp\server\udpbroadcast.cpp || cmake_object_order_depends_target_server
   DEFINES = -DQT_CONCURRENT_LIB -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB
   FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /O2 /Ob2 /DNDEBUG -std:c++17 -MD
   INCLUDES = -IE:\CodeProject\202412\udp\server\build\Desktop_Qt_5_15_2_MSVC2019_64bit-Release\server_autogen\include -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include\QtWidgets -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include\QtGui -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include\QtANGLE -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include\QtCore -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\.\mkspecs\win32-msvc -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include\QtNetwork -external:IF:\Environment\Qt5\5.15.2\msvc2019_64\include\QtConcurrent -external:W0
@@ -93,7 +111,7 @@ build CMakeFiles\server.dir\sharedirectory.cpp.obj: CXX_COMPILER__server_unscann
 #############################################
 # Link the executable server.exe
 
-build server.exe: CXX_EXECUTABLE_LINKER__server_Release CMakeFiles\server.dir\server_autogen\mocs_compilation.cpp.obj CMakeFiles\server.dir\main.cpp.obj CMakeFiles\server.dir\mainwindow.cpp.obj CMakeFiles\server.dir\sharedirectory.cpp.obj | F$:\Environment\Qt5\5.15.2\msvc2019_64\lib\Qt5Widgets.lib F$:\Environment\Qt5\5.15.2\msvc2019_64\lib\Qt5Network.lib F$:\Environment\Qt5\5.15.2\msvc2019_64\lib\Qt5Concurrent.lib F$:\Environment\Qt5\5.15.2\msvc2019_64\lib\Qt5Gui.lib F$:\Environment\Qt5\5.15.2\msvc2019_64\lib\Qt5Core.lib F$:\Environment\Qt5\5.15.2\msvc2019_64\lib\qtmain.lib || server_autogen server_autogen_timestamp_deps
+build server.exe: CXX_EXECUTABLE_LINKER__server_Release CMakeFiles\server.dir\server_autogen\mocs_compilation.cpp.obj CMakeFiles\server.dir\main.cpp.obj CMakeFiles\server.dir\mainwindow.cpp.obj CMakeFiles\server.dir\discoverydevice.cpp.obj CMakeFiles\server.dir\settings.cpp.obj CMakeFiles\server.dir\udpbroadcast.cpp.obj | F$:\Environment\Qt5\5.15.2\msvc2019_64\lib\Qt5Widgets.lib F$:\Environment\Qt5\5.15.2\msvc2019_64\lib\Qt5Network.lib F$:\Environment\Qt5\5.15.2\msvc2019_64\lib\Qt5Concurrent.lib F$:\Environment\Qt5\5.15.2\msvc2019_64\lib\Qt5Gui.lib F$:\Environment\Qt5\5.15.2\msvc2019_64\lib\Qt5Core.lib F$:\Environment\Qt5\5.15.2\msvc2019_64\lib\qtmain.lib || server_autogen server_autogen_timestamp_deps
   FLAGS = /DWIN32 /D_WINDOWS /GR /EHsc /O2 /Ob2 /DNDEBUG -MD
   LINK_FLAGS = /machine:x64 /INCREMENTAL:NO /subsystem:windows
   LINK_LIBRARIES = F:\Environment\Qt5\5.15.2\msvc2019_64\lib\Qt5Widgets.lib  F:\Environment\Qt5\5.15.2\msvc2019_64\lib\Qt5Network.lib  F:\Environment\Qt5\5.15.2\msvc2019_64\lib\Qt5Concurrent.lib  F:\Environment\Qt5\5.15.2\msvc2019_64\lib\Qt5Gui.lib  F:\Environment\Qt5\5.15.2\msvc2019_64\lib\Qt5Core.lib  F:\Environment\Qt5\5.15.2\msvc2019_64\lib\qtmain.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
