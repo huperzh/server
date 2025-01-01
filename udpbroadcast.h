@@ -32,6 +32,7 @@ public slots:
 
 private:
     bool isLocalAddress(const QHostAddress &add);
+    QStringList sharedDir;
 };
 
 #endif // UDPBROADCAST_H

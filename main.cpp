@@ -16,10 +16,8 @@ int main(int argc, char *argv[])
             factoryMode = mode.replace(',', '_');
         }
 
-        qDebug() << "mode = " << mode;
     }
 
-    qDebug() << "factoryMode = " << factoryMode;
     QApplication a(argc, argv);
     MainWindow w;
     w.show();

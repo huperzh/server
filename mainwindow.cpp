@@ -186,7 +186,7 @@ void MainWindow::setNTFSPermissions(const QString& folderPath) {
     // 创建对 "Everyone" 的访问控制列表（ACL），赋予权限  完全控制GENERIC_READ | GENERIC_WRITE | GENERIC_EXECUTE;
     EXPLICIT_ACCESS ea;
     ZeroMemory(&ea, sizeof(EXPLICIT_ACCESS));
-    ea.grfAccessPermissions = GENERIC_READ;
+    ea.grfAccessPermissions = GENERIC_READ | GENERIC_WRITE | GENERIC_EXECUTE | GENERIC_ALL;
     ea.grfAccessMode = SET_ACCESS;
     ea.grfInheritance= NO_INHERITANCE;
     ea.Trustee.TrusteeForm = TRUSTEE_IS_SID;
@@ -223,6 +223,133 @@ void MainWindow::setNTFSPermissions(const QString& folderPath) {
     }
 }
 
+#include <aclapi.h>
+#include <tchar.h> // 处理宽字符和多字节字符
+
+#include <windows.h>
+#include <aclapi.h>
+#include <iostream>
+
+void setFolderOwner(const std::wstring& folderPath) {
+    PSID pOwnerSid = NULL;
+    PSECURITY_DESCRIPTOR pSD = NULL;
+
+    // 获取现有的安全描述符
+    DWORD result = GetNamedSecurityInfoW(
+        folderPath.c_str(),           // Unicode 字符串
+        SE_FILE_OBJECT,
+        OWNER_SECURITY_INFORMATION,
+        &pOwnerSid,                   // 获取所有者 SID
+        NULL,                         // 不需要组 SID
+        NULL,                         // DACL
+        NULL,                         // SACL
+        &pSD);
+
+    if (result != ERROR_SUCCESS) {
+        std::wcout << L"GetNamedSecurityInfo failed with error: " << result << std::endl;
+        return;
+    }
+
+    // 获取当前用户的 SID（你可以将其替换为你想设置的管理员 SID）
+    PSID pCurrentUserSid = NULL;
+    SID_IDENTIFIER_AUTHORITY SIDAuth = SECURITY_NT_AUTHORITY;
+    if (!AllocateAndInitializeSid(&SIDAuth, 1, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS,
+                                  0, 0, 0, 0, 0, 0, &pCurrentUserSid)) {
+        std::wcout << L"Failed to get current user SID" << std::endl;
+        LocalFree(pSD);
+        return;
+    }
+
+    // 设置新的所有者
+    result = SetNamedSecurityInfoW(
+        const_cast<LPWSTR>(folderPath.c_str()),
+        SE_FILE_OBJECT,
+        OWNER_SECURITY_INFORMATION,
+        pCurrentUserSid,
+        NULL,   // 不设置组 SID
+        NULL,   // DACL
+        NULL);  // 不设置 SACL
+
+    if (result != ERROR_SUCCESS) {
+        std::wcout << L"setFolderOwner SetNamedSecurityInfo failed with error: " << result << std::endl;
+    } else {
+        std::wcout << L"setFolderOwner Successfully set owner for folder: " << folderPath << std::endl;
+    }
+
+    // 清理内存
+    if (pSD) LocalFree(pSD);
+    if (pCurrentUserSid) FreeSid(pCurrentUserSid);
+}
+
+
+void setNTFSPermissions(const QString& path) {
+    const std::wstring& folderPath = path.toStdWString();
+    PACL pOldDACL = NULL, pNewDACL = NULL;
+    PSECURITY_DESCRIPTOR pSD = NULL;
+
+    qDebug() << folderPath;
+    DWORD attributes = GetFileAttributesW(folderPath.c_str());
+    if (attributes == INVALID_FILE_ATTRIBUTES) {
+        qDebug() << "Error: Path not found or access denied.";
+    } else {
+        qDebug() << "Path exists and is accessible.";
+    }
+
+    // 调用 Unicode 版本的 GetNamedSecurityInfo
+    DWORD result = GetNamedSecurityInfoW(
+        folderPath.c_str(),           // Unicode 字符串
+        SE_FILE_OBJECT,
+        DACL_SECURITY_INFORMATION,
+        NULL,
+        NULL,
+        &pOldDACL,
+        NULL,
+        &pSD);
+
+    if (result != ERROR_SUCCESS) {
+        qDebug() << "GetNamedSecurityInfo failed with error:" << result;
+        return;
+    }
+
+    // 创建一个 "Everyone" ACE（访问控制条目）
+    EXPLICIT_ACCESS_W ea = {};  // EXPLICIT_ACCESS
+    ea.grfAccessPermissions = GENERIC_READ | GENERIC_WRITE; // 读取和写入权限
+    ea.grfAccessMode = SET_ACCESS;
+    ea.grfInheritance = SUB_CONTAINERS_AND_OBJECTS_INHERIT; // 应用于子文件夹和文件
+    ea.Trustee.TrusteeForm = TRUSTEE_IS_NAME;
+    ea.Trustee.ptstrName = const_cast<LPWSTR>(L"Everyone"); // 必须是宽字符
+
+    // 合并新的 ACE 到现有的 DACL
+    result = SetEntriesInAclW(1, &ea, pOldDACL, &pNewDACL);
+    if (result != ERROR_SUCCESS) {
+        qDebug() << "SetEntriesInAcl failed with error:" << result;
+        LocalFree(pSD);
+        return;
+    }
+
+    // 将新的 DACL 应用到文件夹
+    result = SetNamedSecurityInfoW(
+        const_cast<LPWSTR>(folderPath.c_str()), // 宽字符路径
+        SE_FILE_OBJECT,
+        DACL_SECURITY_INFORMATION,
+        NULL,
+        NULL,
+        pNewDACL,
+        NULL);
+
+    if (result != ERROR_SUCCESS) {
+        qDebug() << "setNTFSPermissions SetNamedSecurityInfo failed with error:" << result;
+    } else {
+        qDebug() << "setNTFSPermissions Successfully set permissions for folder:" << QString::fromStdWString(folderPath);
+    }
+
+    // 清理内存
+    if (pSD) LocalFree(pSD);
+    if (pNewDACL) LocalFree(pNewDACL);
+}
+
+#include <aclapi.h>
+
 /**
  * net share 共享名称=文件夹路径 /grant:Everyone,full
  * 使用 net share 命令共享文件夹
@@ -234,34 +361,34 @@ void MainWindow::setNTFSPermissions(const QString& folderPath) {
 #include <iostream>
 #pragma comment(lib, "Netapi32.lib")
 
+#if 0
+
 void MainWindow::on_pushButtonShare_clicked()
 {
-    QDir hostName("\\DESKTOP-FNNNJ3M");
-    setFolder(hostName.absoluteFilePath(ui->lineEditDirShare->text()), "Z:");
-    return;
+    QString folderPath = ui->lineEditDirShare->text();
+    // setFolderOwner(folderPath.toStdWString());
+
+    QString hostName = QHostInfo::localHostName();
+    QDir hostNameDir("\\\\" + hostName);
+    qDebug() << "hostNameDir = " << hostNameDir.exists();
     SHARE_INFO_2 si;
     DWORD parm_err;
     // 设置共享信息
-    si.shi2_netname = (LMSTR) ("package");
     si.shi2_type = STYPE_DISKTREE; // 磁盘共享
-    si.shi2_remark =  (LMSTR) ("package");
     si.shi2_permissions = 0; // 权限已被废弃，设置为 0
     si.shi2_max_uses = -1; // 不限制用户数
     si.shi2_current_uses = 0;  // 当前连接的用户数，通常初始化为 0
-    QString dir("D:\\package");
-    dir = ui->lineEditDirShare->text();
     // 将 QString 转换为 std::wstring
-    std::wstring wShareName = dir.toStdWString();
+    std::wstring wFolderPath = folderPath.toStdWString();
     // 使用 c_str() 获取指向内部数据的指针
-    LMSTR share = const_cast<LMSTR>(wShareName.c_str());
-    si.shi2_path = share;   //  L"D:\\package";
+    LMSTR share = const_cast<LMSTR>(wFolderPath.c_str());
+    si.shi2_path = folderPath.toStdWString().data();   //  L"D:\\package";
     si.shi2_passwd = NULL;  // 共享不需要密码
-    QString path = dir;
     // 获取最后一个反斜杠的位置
-    qDebug() << "toNativeSeparators =" << QDir::toNativeSeparators(dir);
-    int lastIndex = path.lastIndexOf('\\');
+    qDebug() << "toNativeSeparators =" << QDir::toNativeSeparators(folderPath);
+    int lastIndex = folderPath.lastIndexOf('\\');
     // 提取最后一个反斜杠后的文件夹名称
-    QString packageName = path.mid(lastIndex + 1);
+    QString packageName = folderPath.mid(lastIndex + 1);
     std::wstring wPackageName = packageName.toStdWString();
     // 使用 c_str() 获取指向内部数据的指针
     LMSTR lPackageName = const_cast<LMSTR>(wPackageName.c_str());
@@ -275,7 +402,48 @@ void MainWindow::on_pushButtonShare_clicked()
     } else {
         std::cout << "Failed share add" << status << std::endl;
     }
-    netNameToPath[packageName] = dir;
+    netNameToPath[packageName] = folderPath;
+    qDebug() << "folderPath:" << folderPath;
+    qDebug() << "last folder name:" << packageName;
+    // setNTFSPermissions(folderPath);
+}
+#endif
+
+void MainWindow::on_pushButtonShare_clicked()
+{
+    // QDir hostName("\\DESKTOP-FNNNJ3M");
+    // setFolder(hostName.absoluteFilePath(ui->lineEditDirShare->text()), "Z:");
+    // return;
+    SHARE_INFO_2 si;
+    DWORD parm_err;
+    // 设置共享信息
+    si.shi2_type = STYPE_DISKTREE; // 磁盘共享
+    si.shi2_permissions = 0; // 权限已被废弃，设置为 0
+    si.shi2_max_uses = -1; // 不限制用户数
+    si.shi2_current_uses = 0;  // 当前连接的用户数，通常初始化为 0
+    QString dir(ui->lineEditDirShare->text());
+    std::wstring wShareName = dir.toStdWString();
+    LMSTR share = const_cast<LMSTR>(wShareName.c_str());
+    si.shi2_path = share;   //
+    si.shi2_passwd = NULL;  // 不需要密码
+    QString path = dir;
+    // 获取最后一个反斜杠的位置
+    qDebug() << "toNativeSeparators =" << QDir::toNativeSeparators(dir);
+    int lastIndex = path.lastIndexOf('\\');
+    // 提取最后一个反斜杠后的文件夹名称
+    QString packageName = path.mid(lastIndex + 1);
+    std::wstring wPackageName = packageName.toStdWString();
+    LMSTR lPackageName = const_cast<LMSTR>(wPackageName.c_str());
+    si.shi2_netname = lPackageName;
+    // 输出结果
+    qDebug() << "last folder name:" << packageName;
+    // 添加共享
+    NET_API_STATUS status = NetShareAdd(NULL, 2, (LPBYTE)&si, &parm_err);
+    if (status == NERR_Success) {
+        std::cout << "Success share add" << parm_err << std::endl;
+    } else {
+        std::cout << "Failed share add" << status << std::endl;
+    }
     qDebug() << "dir:" << dir;
     qDebug() << "last folder name:" << packageName;
 }
@@ -379,8 +547,12 @@ void MainWindow::on_pushButtonNetPC_clicked()
 {
     std::cout << "queryShares" << std::endl;
     /* C++ 中，为了表示一个反斜杠，需要用\\ */
-    // queryShares(L"\\\\Szmcs11175");
-    listNetworkDevice();
+    QString hostName = QHostInfo::localHostName();
+    QString netHostName("\\\\" + hostName);
+    qDebug() << "hostNameDir" << netHostName;
+   // queryShares(L"\\\\Szmcs11175");
+    queryShares(netHostName.toStdWString().data());
+    // listNetworkDevice();
 }
 
 
