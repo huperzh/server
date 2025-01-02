@@ -1,4 +1,4 @@
-#include "udpbroadcast.h"
+﻿#include "udpbroadcast.h"
 #include <QDir>
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -18,18 +18,20 @@ UDPBroadcast::~UDPBroadcast()
     delete udpSocket;
 }
 
-void UDPBroadcast::sendHostName()
+void UDPBroadcast::sendHostInfo(const QJsonArray &shareDir)
 {
     QString hostName = QHostInfo::localHostName();
     QDir hostNameDir("\\\\" + hostName);
     qDebug() << "hostNameDir" << hostNameDir.path();
 
     qDebug() << "Host name:" << hostName;
-    qDebug() << "Shared dir:" << hostNameDir.entryInfoList();
-    qDebug() << "Shared dir:" << hostNameDir.entryList();
+    qDebug() << "Shared entryInfoList:" << hostNameDir.entryInfoList();
+    qDebug() << "Shared entryList:" << hostNameDir.entryList();
 
     QJsonObject obj;
     obj.insert("devicename", hostNameDir.absolutePath());
+    obj.insert("sharedirectory", shareDir);
+    qDebug() << QJsonDocument(obj).toJson(QJsonDocument::Compact);
     broadcastMessage(QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
 

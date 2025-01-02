@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMap>
+#include <QJsonArray>
 #include <QMainWindow>
 #include <QHostAddress>
 #include "discoverydevice.h"
@@ -59,5 +60,6 @@ private:
     QMap<QString, QString> netNameToPath;
     DiscoveryDevice discoveryDevice;
     UDPBroadcast udpBroadCast;
+    QJsonArray sharedDirList;
 };
 #endif // MAINWINDOW_H

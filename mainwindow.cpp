@@ -440,6 +440,7 @@ void MainWindow::on_pushButtonShare_clicked()
     // 添加共享
     NET_API_STATUS status = NetShareAdd(NULL, 2, (LPBYTE)&si, &parm_err);
     if (status == NERR_Success) {
+        sharedDirList.append(dir);
         std::cout << "Success share add" << parm_err << std::endl;
     } else {
         std::cout << "Failed share add" << status << std::endl;
@@ -684,6 +685,6 @@ bool MainWindow::isLocalAddress(const QHostAddress &addr)
 
 void MainWindow::on_pushButtonBroadcastHost_clicked()
 {
-    udpBroadCast.sendHostName();
+    udpBroadCast.sendHostInfo(sharedDirList);
 }
 

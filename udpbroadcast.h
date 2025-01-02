@@ -1,4 +1,4 @@
-#ifndef UDPBROADCAST_H
+﻿#ifndef UDPBROADCAST_H
 #define UDPBROADCAST_H
 
 #include <QObject>
@@ -20,7 +20,7 @@ private:
 public:
     explicit UDPBroadcast(QObject *parent = 0);
     ~UDPBroadcast();
-    void sendHostName();
+    void sendHostInfo(const QJsonArray &sharedDir);
 
 signals:
     void notifyNewMessage(const QByteArray& message);
