@@ -5,8 +5,8 @@
 #include <QJsonArray>
 #include <QMainWindow>
 #include <QHostAddress>
-#include "discoverydevice.h"
 #include "udpbroadcast.h"
+#include "sharedirectory.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -24,7 +24,7 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void getCurrentDevice();
-    void setFolder(const QString &remotePath, const QString &localDrive);
+    void setFolder(const QString &deviceName, const QString &path);
     QString findAvailableDriveLetter();
     void listNetworkDevice();
     bool isLocalHost(const QString &ipAddr);
@@ -49,6 +49,10 @@ private slots:
 
     void on_pushButtonBroadcastHost_clicked();
 
+    void on_pushButtonSearchShared_clicked();
+
+    void on_pushButtonNet2Local_clicked();
+
 private:
     void getNetPC();
     bool isLocalAddress(const QHostAddress &addr);
@@ -58,8 +62,7 @@ private:
     QUdpSocket *udpSocket{nullptr};
     BroadcastHelper *broadcastHelper{nullptr};
     QMap<QString, QString> netNameToPath;
-    DiscoveryDevice discoveryDevice;
     UDPBroadcast udpBroadCast;
-    QJsonArray sharedDirList;
+    ShareDirectory shareDirectory;
 };
 #endif // MAINWINDOW_H

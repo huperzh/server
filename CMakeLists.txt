@@ -17,6 +17,12 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+        sharedirectory.cpp
+        sharedirectory.h
+        settings.cpp
+        settings.h
+        udpbroadcast.cpp
+        udpbroadcast.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -38,9 +44,6 @@ else()
     else()
         add_executable(server
             ${PROJECT_SOURCES}
-            discoverydevice.h discoverydevice.cpp
-            settings.h settings.cpp
-            udpbroadcast.h udpbroadcast.cpp
         )
     endif()
 endif()

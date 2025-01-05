@@ -23,11 +23,9 @@ void UDPBroadcast::sendHostInfo(const QJsonArray &shareDir)
     QString hostName = QHostInfo::localHostName();
     QDir hostNameDir("\\\\" + hostName);
     qDebug() << "hostNameDir" << hostNameDir.path();
-
     qDebug() << "Host name:" << hostName;
     qDebug() << "Shared entryInfoList:" << hostNameDir.entryInfoList();
     qDebug() << "Shared entryList:" << hostNameDir.entryList();
-
     QJsonObject obj;
     obj.insert("devicename", hostNameDir.absolutePath());
     obj.insert("sharedirectory", shareDir);

@@ -1,11 +1,11 @@
-build/*
-CGraph/
+build
 .gitmodules
 *.dll
 *.exe
 *.db
 *.rcc
-
+CMakeLists.txt.user
+CMakeLists.txt.user*
 .vs
 .vscode
 .gitignore

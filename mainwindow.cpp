@@ -12,6 +12,9 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QFileDialog>
+#include <QJsonObject>
+#include <QJsonDocument>
+
 #define CMD_SEND_DISP QString("[%1]# SEND ASCII TO %2:%3")
 #define CMD_RECV_DISP QString("[%1]# RECV ASCII FROM %2:%3")
 /*
@@ -27,7 +30,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     return;
-    discoveryDevice.start(Settings::serverPort());
     udpSocket = new QUdpSocket(this);
     udpSocket->setSocketOption(QAbstractSocket::MulticastLoopbackOption, 1);
     udpSocket->setSocketOption(QAbstractSocket::MulticastTtlOption, 1);
@@ -413,7 +415,16 @@ void MainWindow::on_pushButtonShare_clicked()
 {
     // QDir hostName("\\DESKTOP-FNNNJ3M");
     // setFolder(hostName.absoluteFilePath(ui->lineEditDirShare->text()), "Z:");
-    // return;
+    QString path(ui->lineEditDirShare->text());
+    QString errMsg;
+    bool ret = shareDirectory.shared(path, errMsg);
+    if (ret) {
+        qDebug() << "shared success direcotry" << errMsg;
+    } else {
+        qDebug() << "shared failed direcotry" << errMsg;
+    }
+
+    return;
     SHARE_INFO_2 si;
     DWORD parm_err;
     // 设置共享信息
@@ -426,7 +437,7 @@ void MainWindow::on_pushButtonShare_clicked()
     LMSTR share = const_cast<LMSTR>(wShareName.c_str());
     si.shi2_path = share;   //
     si.shi2_passwd = NULL;  // 不需要密码
-    QString path = dir;
+    path = dir;
     // 获取最后一个反斜杠的位置
     qDebug() << "toNativeSeparators =" << QDir::toNativeSeparators(dir);
     int lastIndex = path.lastIndexOf('\\');
@@ -440,7 +451,6 @@ void MainWindow::on_pushButtonShare_clicked()
     // 添加共享
     NET_API_STATUS status = NetShareAdd(NULL, 2, (LPBYTE)&si, &parm_err);
     if (status == NERR_Success) {
-        sharedDirList.append(dir);
         std::cout << "Success share add" << parm_err << std::endl;
     } else {
         std::cout << "Failed share add" << status << std::endl;
@@ -602,65 +612,69 @@ void MainWindow::listNetworkDevice() {
 #include <iostream>
 
 #pragma comment(lib, "Mpr.lib")
-void MainWindow::setFolder(const QString &remotePath, const QString &localDrive) {
-    if (remotePath.isEmpty()) {
+void MainWindow::setFolder(const QString &deviceName, const QString &path) {
+    QString remote = QDir::toNativeSeparators(deviceName);
+    QDir dir(remote);
+    if (!dir.exists()) {
         qDebug() << "Remote path is empty.";
         return;
     }
-    qDebug() << "remotePath. = " << remotePath;
 
+    qDebug() << "absolutePath = " << QDir::toNativeSeparators(dir.absoluteFilePath(path));
     // 检查是否已指定驱动器号
-    QString driveLetter = localDrive.isEmpty() ? findAvailableDriveLetter() : localDrive;
+    QFileInfo fileInfo(QDir::toNativeSeparators(dir.absoluteFilePath(path)));
+    qDebug() << fileInfo.exists();
+    QString driveLetter = findAvailableDriveLetter();
+    qDebug() << "driveLetter = " << driveLetter;
 
     if (driveLetter.isEmpty()) {
         qDebug() << "No available drive letter.";
         return;
     }
-    std::string strdriveLetter = driveLetter.toStdString();
+
     // 配置 NETRESOURCE 结构体
     NETRESOURCEA nr;
     ZeroMemory(&nr, sizeof(NETRESOURCEA));
-    nr.dwType = RESOURCETYPE_DISK; // 资源类型：磁盘
-    nr.lpLocalName = driveLetter.toLatin1().data(); // 本地驱动器号
-    nr.lpRemoteName = driveLetter.toLatin1().data(); // 远程共享路径
-    nr.lpRemoteName = driveLetter.toLocal8Bit().data(); // 远程共享路径
+    nr.dwType = RESOURCETYPE_DISK;
+    nr.lpLocalName =  driveLetter.toLatin1().data();
+    nr.lpRemoteName = QDir::toNativeSeparators(dir.absoluteFilePath(path)).toLocal8Bit().data();
     nr.lpProvider = NULL;
 
-    // 映射驱动器
-    DWORD result = WNetAddConnection2A(&nr, NULL, NULL, CONNECT_TEMPORARY);
+    // 调用 WNetAddConnection2A
+    DWORD result = WNetAddConnection2A(&nr, NULL, NULL, 0);  // 默认标志为 0
     if (result == NO_ERROR) {
-        qDebug() << "Drive mapped successfully:" << driveLetter;
+        qDebug() << "Drive mapped successfully: " << driveLetter;
     } else {
         qDebug() << "Failed to map drive. Error code:" << result;
     }
+
 }
 
 QString MainWindow::findAvailableDriveLetter() {
+
+    auto drives = QDir::drives();
     // 从 Z: 开始尝试，找到第一个可用的驱动器号
     for (char drive = 'Z'; drive >= 'A'; --drive) {
-        QString drivePath = QString("%1:").arg(drive);
-        LPCSTR path = drivePath.toLatin1().data();
-        UINT driveType = GetDriveTypeA (path);
-        if (driveType == DRIVE_NO_ROOT_DIR) {
-            return drivePath;
+        auto it = std::find_if(drives.begin(), drives.end(), [=](const QFileInfo& item) {
+            return item.absolutePath().contains(drive, Qt::CaseInsensitive);
+        });
+
+        if(it == drives.end()) {
+            return QString("%1:").arg(drive);
         }
     }
     return QString(); // 未找到可用驱动器号
 }
 
-#include <QJsonObject>
-#include <QJsonDocument>
 void MainWindow::on_checkBoxEnableBroad_clicked(bool checked)
 {
     if(checked) {
         QString hostName = QHostInfo::localHostName();
         QDir hostNameDir("\\\\" + hostName);
         qDebug() << "hostNameDir" << hostNameDir.path();
-
         qDebug() << "Host name:" << hostName;
-        qDebug() << "Shared dir:" << hostNameDir.entryInfoList();
-        qDebug() << "Shared dir:" << hostNameDir.entryList();
-
+        qDebug() << "Shared entryInfoList:" << hostNameDir.entryInfoList();
+        qDebug() << "Shared entryList:" << hostNameDir.entryList();
         QJsonObject obj;
         obj.insert("devicename", hostNameDir.absolutePath());
         int size = udpSocket->writeDatagram(QJsonDocument(obj).toJson(QJsonDocument::Compact), QHostAddress("255.255.255.255"), cast_port);
@@ -685,6 +699,19 @@ bool MainWindow::isLocalAddress(const QHostAddress &addr)
 
 void MainWindow::on_pushButtonBroadcastHost_clicked()
 {
-    udpBroadCast.sendHostInfo(sharedDirList);
+    udpBroadCast.sendHostInfo(shareDirectory.getArray());
+}
+
+void MainWindow::on_pushButtonSearchShared_clicked()
+{
+    QString hostName = QHostInfo::localHostName();
+
+   // \\Desktop-venpb2n
+    shareDirectory.searchDir("\\\\Desktop-venpb2n");
+}
+
+void MainWindow::on_pushButtonNet2Local_clicked()
+{
+    setFolder("\\\\Desktop-venpb2n", QString::fromLocal8Bit("相机1"));
 }
 

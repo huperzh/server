@@ -227,8 +227,8 @@
       <widget class="QCheckBox" name="checkBoxEnableBroad">
        <property name="geometry">
         <rect>
-         <x>100</x>
-         <y>300</y>
+         <x>110</x>
+         <y>280</y>
          <width>101</width>
          <height>21</height>
         </rect>
@@ -242,6 +242,37 @@
         <rect>
          <x>280</x>
          <y>190</y>
+         <width>100</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>80</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>广播共享信息</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButtonSearchShared">
+       <property name="geometry">
+        <rect>
+         <x>280</x>
+         <y>270</y>
          <width>80</width>
          <height>30</height>
         </rect>
@@ -265,7 +296,7 @@
         </size>
        </property>
        <property name="text">
-        <string>广播主机</string>
+        <string>查询</string>
        </property>
       </widget>
      </widget>
