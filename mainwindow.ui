@@ -165,9 +165,9 @@
       <widget class="QPushButton" name="pushButtonNet2Local">
        <property name="geometry">
         <rect>
-         <x>40</x>
-         <y>190</y>
-         <width>80</width>
+         <x>280</x>
+         <y>350</y>
+         <width>111</width>
          <height>30</height>
         </rect>
        </property>
@@ -179,7 +179,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>80</width>
+         <width>111</width>
          <height>30</height>
         </size>
        </property>
@@ -297,6 +297,37 @@
        </property>
        <property name="text">
         <string>查询</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButtonNet2LocaGet">
+       <property name="geometry">
+        <rect>
+         <x>120</x>
+         <y>350</y>
+         <width>111</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>111</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>80</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>获取映射目录</string>
        </property>
       </widget>
      </widget>

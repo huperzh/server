@@ -53,6 +53,8 @@ private slots:
 
     void on_pushButtonNet2Local_clicked();
 
+    void on_pushButtonNet2LocaGet_clicked();
+
 private:
     void getNetPC();
     bool isLocalAddress(const QHostAddress &addr);

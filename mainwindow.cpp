@@ -704,14 +704,87 @@ void MainWindow::on_pushButtonBroadcastHost_clicked()
 
 void MainWindow::on_pushButtonSearchShared_clicked()
 {
-    QString hostName = QHostInfo::localHostName();
+    QString hostName = QHostInfo::localHostName(); // "\\\\Desktop-venpb2n"
 
-   // \\Desktop-venpb2n
     shareDirectory.searchDir("\\\\Desktop-venpb2n");
 }
 
 void MainWindow::on_pushButtonNet2Local_clicked()
 {
-    setFolder("\\\\Desktop-venpb2n", QString::fromLocal8Bit("相机1"));
+    shareDirectory.setFolder("Desktop-venpb2n");
+    //setFolder("\\\\Desktop-venpb2n", QString::fromLocal8Bit("相机1"));
 }
+
+void MainWindow::on_pushButtonNet2LocaGet_clicked()
+{
+    QMap<QString, QString> network2Local = shareDirectory.getMappedNetworkDrives();
+    qDebug() << QDir::drives();
+    if (network2Local.isEmpty()) {
+        qDebug()  << "No network drives are mapped.";
+    } else {
+        qDebug() << "Mapped network drives:";
+        auto keys = network2Local.keys();
+        for (const QString &drive : keys) {
+            qDebug() << "remote = " << drive.toLocal8Bit().data()
+                     << "local = " << network2Local.value(drive);
+        }
+    }
+}
+
+#include <windows.h>
+#include <iostream>
+#include <QString>
+#include <QList>
+
+#include <windows.h>
+#include <iostream>
+#include <QString>
+#include <QList>
+
+// 共享的但是没有映射驱动的目录也会被获取到
+QList<QString> getMappedNetworkDrives() {
+    QList<QString> networkDrives;
+
+    // 打开一个句柄，用于枚举当前用户的所有网络连接
+    HANDLE hEnum;
+    DWORD dwResult = WNetOpenEnumA(RESOURCE_CONNECTED, RESOURCETYPE_DISK, 0, NULL, &hEnum);
+    if (dwResult != NO_ERROR) {
+        std::cerr << "WNetOpenEnum failed with error code: " << dwResult << std::endl;
+        return networkDrives; // 返回空列表
+    }
+
+    // 准备缓冲区来存储枚举结果
+    DWORD bufferSize = 16384; // 16KB 缓冲区
+    char buffer[16384];
+    LPNETRESOURCEA lpnr = (LPNETRESOURCEA)buffer;
+    DWORD entries = -1; // 枚举所有条目
+
+    // 枚举资源
+    while (true) {
+        ZeroMemory(buffer, bufferSize);
+        DWORD dwSize = bufferSize;
+        DWORD dwCount = entries;
+
+        dwResult = WNetEnumResourceA(hEnum, &dwCount, lpnr, &dwSize);
+        if (dwResult == ERROR_NO_MORE_ITEMS) {
+            break; // 没有更多的条目
+        }
+        if (dwResult != NO_ERROR) {
+            std::cerr << "WNetEnumResource failed with error code: " << dwResult << std::endl;
+            break;
+        }
+
+        // 遍历返回的资源条目
+        for (DWORD i = 0; i < dwCount; ++i) {
+            if (lpnr[i].dwType == RESOURCETYPE_DISK) {
+                // 添加远程路径到列表
+                networkDrives.append(QString::fromLocal8Bit(lpnr[i].lpRemoteName));
+            }
+        }
+    }
+
+    WNetCloseEnum(hEnum); // 关闭枚举句柄
+    return networkDrives;
+}
+
 

@@ -13,10 +13,14 @@ public:
     bool shared(const QString &path, QString &errMsg);
     bool searchDir(const QString& hostName);
     void searchHost();
+    void setFolder(const QString &deviceName);
+    QMap<QString, QString> getMappedNetworkDrives();
+    QStringList getMappedDrives();
 
 signals:
 
 private:
+    QString findAvailableDriveLetter();
 
     void saveArray();
     /**
@@ -33,6 +37,7 @@ private:
     bool append(const QString &path);
 
     QJsonArray sharedArray;
+    QMap<QString, QString> remote2Local;
 };
 
 #endif // SHAREDIRECTORY_H
