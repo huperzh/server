@@ -704,14 +704,18 @@ void MainWindow::on_pushButtonBroadcastHost_clicked()
 
 void MainWindow::on_pushButtonSearchShared_clicked()
 {
-    QString hostName = QHostInfo::localHostName(); // "\\\\Desktop-venpb2n"
-
-    shareDirectory.searchDir("\\\\Desktop-venpb2n");
+    QString hostName = QHostInfo::localHostName();
+    qDebug() << "hostName = " << hostName;
+    QString localtName = QString("\\\\%1").arg(hostName);
+    shareDirectory.searchDir(localtName);
 }
 
 void MainWindow::on_pushButtonNet2Local_clicked()
 {
-    shareDirectory.setFolder("Desktop-venpb2n");
+    // 测试局域网的主机名称
+    QString name("Desktop-venpb2n");
+    QString testNetName = QString("\\\\%1").arg(name);
+    shareDirectory.setFolder(testNetName);
     //setFolder("\\\\Desktop-venpb2n", QString::fromLocal8Bit("相机1"));
 }
 

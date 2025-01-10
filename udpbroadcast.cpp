@@ -29,13 +29,13 @@ void UDPBroadcast::sendHostInfo(const QJsonArray &shareDir)
     QJsonObject obj;
     obj.insert("devicename", hostNameDir.absolutePath());
     obj.insert("sharedirectory", shareDir);
-    qDebug() << QJsonDocument(obj).toJson(QJsonDocument::Compact);
+    qDebug() << "Compact = " << QJsonDocument(obj).toJson().data();
     broadcastMessage(QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
 
 void UDPBroadcast::recvMessage(const QByteArray &message)
 {
-    qDebug() << "message = " << message;
+    qDebug() << "message = " << QJsonDocument::fromJson(message).toJson().data();
     QJsonDocument jsonDoc = QJsonDocument::fromJson(message);
     // 检查解析是否成功
     if (!jsonDoc.isNull() && jsonDoc.isObject()) {

@@ -194,6 +194,9 @@
        </property>
       </widget>
       <widget class="QPushButton" name="pushButtonNetPC">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="geometry">
         <rect>
          <x>150</x>
@@ -271,9 +274,9 @@
       <widget class="QPushButton" name="pushButtonSearchShared">
        <property name="geometry">
         <rect>
-         <x>280</x>
-         <y>270</y>
-         <width>80</width>
+         <x>230</x>
+         <y>280</y>
+         <width>111</width>
          <height>30</height>
         </rect>
        </property>
@@ -285,7 +288,7 @@
        </property>
        <property name="minimumSize">
         <size>
-         <width>80</width>
+         <width>111</width>
          <height>30</height>
         </size>
        </property>
@@ -296,7 +299,7 @@
         </size>
        </property>
        <property name="text">
-        <string>查询</string>
+        <string>查询本地共享目录</string>
        </property>
       </widget>
       <widget class="QPushButton" name="pushButtonNet2LocaGet">
