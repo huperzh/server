@@ -97,7 +97,7 @@
         </size>
        </property>
        <property name="text">
-        <string>共享</string>
+        <string>广播共享</string>
        </property>
       </widget>
       <widget class="QPushButton" name="pushButtonSelect">

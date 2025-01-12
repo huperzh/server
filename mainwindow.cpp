@@ -31,8 +31,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     connect(&udpBroadCast, &UDPBroadcast::notifyDirectories, this, [=](const QJsonObject& deviceDirectories){
         QString devicename = deviceDirectories["devicename"].toString();
+        QJsonArray arrayDir = deviceDirectories["sharedirectory"].toArray();
+        qDebug() << "arrayDir = " << arrayDir;
         qDebug() << "devicename = " << devicename;
-        shareDirectory.setFolder(devicename);
+        shareDirectory.setDevice(devicename);
     });
 
     return;
@@ -423,8 +425,9 @@ void MainWindow::on_pushButtonShare_clicked()
     // setFolder(hostName.absoluteFilePath(ui->lineEditDirShare->text()), "Z:");
     QString path(ui->lineEditDirShare->text());
     QString errMsg;
-    bool ret = shareDirectory.shared(path, errMsg);
+    bool ret = shareDirectory.shared(QDir::toNativeSeparators(path), errMsg);
     if (ret) {
+        udpBroadCast.sendHostInfo(shareDirectory.getArray());
         qDebug() << "shared success direcotry" << errMsg;
     } else {
         qDebug() << "shared failed direcotry" << errMsg;

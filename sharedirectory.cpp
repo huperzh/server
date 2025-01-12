@@ -39,13 +39,13 @@ bool ShareDirectory::shared(const QString &path, QString &errMsg)
         return false;
     }
 
-    SHARE_INFO_2 si;
     DWORD parm_err;
     std::wstring wShareName = path.toStdWString();
     LMSTR share = const_cast<LMSTR>(wShareName.c_str());
-    std::wstring wPackageName = netName.toStdWString();
+    const std::wstring wPackageName = netName.toStdWString();
     LMSTR lPackageName = const_cast<LMSTR>(wPackageName.c_str());
     // 设置共享信息
+    SHARE_INFO_2 si = {0};  // 零初始化结构体
     si.shi2_type = STYPE_DISKTREE; // 磁盘共享
     si.shi2_permissions = 0; // 权限废弃，设置为 0
     si.shi2_max_uses = -1; // 不限制用户数
@@ -64,7 +64,6 @@ bool ShareDirectory::shared(const QString &path, QString &errMsg)
         errMsg = QString("Shared directory failed, error code :%1").arg(status);
         return false;
     }
-    return true;
 }
 
 bool ShareDirectory::append(const QString &netname)
@@ -114,6 +113,47 @@ void ShareDirectory::searchHost()
 {
 
 }
+
+void ShareDirectory::setDevice(const QString &deviceName)
+{
+    QString remote = QString("\\\\%1").arg(deviceName);
+    qDebug() << "remote = " <<remote;
+    QDir dir(remote);
+    if (!dir.exists()) {
+        qDebug() << "Remote path is empty.";
+        return;
+    }
+
+    auto entryList = dir.entryInfoList();
+    for(const auto& dirInfo : entryList)    {
+        // 检查是否已指定驱动器号
+        QString path(QDir::toNativeSeparators(dirInfo.absoluteFilePath()));
+        QString driveLetter = findAvailableDriveLetter();
+        qDebug() << "driveLetter = " << driveLetter;
+        if (driveLetter.isEmpty()) {
+            qDebug() << "No available drive letter.";
+            return;
+        }
+        qDebug() << "path = " << path;
+        qDebug() << "baseName = " << dirInfo.baseName();
+        // 配置 NETRESOURCE 结构体
+        NETRESOURCEA nr;
+        ZeroMemory(&nr, sizeof(NETRESOURCEA));
+        nr.dwType = RESOURCETYPE_DISK;
+        nr.lpLocalName =  driveLetter.toLatin1().data();
+        nr.lpRemoteName = QDir::toNativeSeparators(path).toLocal8Bit().data();
+        nr.lpProvider = nullptr;
+
+        // 调用 WNetAddConnection2A
+        DWORD result = WNetAddConnection2A(&nr, nullptr, nullptr, 0);  // 默认标志为 0
+        if (result == NO_ERROR) {
+            qDebug() << "Drive mapped successfully: " << driveLetter;
+        } else {
+            qDebug() << "Failed to map drive. Error code:" << result;
+        }
+    }
+}
+
 
 void ShareDirectory::saveArray()
 {
@@ -173,42 +213,31 @@ QString ShareDirectory::findAvailableDriveLetter() {
     return QString(); // 未找到可用驱动器号
 }
 
-void ShareDirectory::setFolder(const QString &deviceName) {
-    QString remote = QString("\\\\%1").arg(deviceName);
-    qDebug() << "remote = " <<remote;
-    QDir dir(remote);
-    if (!dir.exists()) {
-        qDebug() << "Remote path is empty.";
+void ShareDirectory::setFolder(const QString &folderName) {
+
+    QString path(QDir::toNativeSeparators(folderName));
+    QString driveLetter = findAvailableDriveLetter();
+    qDebug() << "driveLetter = " << driveLetter;
+    if (driveLetter.isEmpty()) {
+        qDebug() << "No available drive letter.";
         return;
     }
 
-    auto entryList = dir.entryInfoList();
-    for(const auto& dirInfo : entryList)    {
-        // 检查是否已指定驱动器号
-        QString path(QDir::toNativeSeparators(dirInfo.absoluteFilePath()));
-        QString driveLetter = findAvailableDriveLetter();
-        qDebug() << "driveLetter = " << driveLetter;
-        if (driveLetter.isEmpty()) {
-            qDebug() << "No available drive letter.";
-            return;
-        }
-        qDebug() << "path = " << path;
-        qDebug() << "baseName = " << dirInfo.baseName();
-        // 配置 NETRESOURCE 结构体
-        NETRESOURCEA nr;
-        ZeroMemory(&nr, sizeof(NETRESOURCEA));
-        nr.dwType = RESOURCETYPE_DISK;
-        nr.lpLocalName =  driveLetter.toLatin1().data();
-        nr.lpRemoteName = QDir::toNativeSeparators(path).toLocal8Bit().data();
-        nr.lpProvider = nullptr;
+    qDebug() << "path = " << path;
+    // 配置 NETRESOURCE 结构体
+    NETRESOURCEA nr;
+    ZeroMemory(&nr, sizeof(NETRESOURCEA));
+    nr.dwType = RESOURCETYPE_DISK;
+    nr.lpLocalName =  driveLetter.toLatin1().data();
+    nr.lpRemoteName = QDir::toNativeSeparators(path).toLocal8Bit().data();
+    nr.lpProvider = nullptr;
 
-        // 调用 WNetAddConnection2A
-        DWORD result = WNetAddConnection2A(&nr, nullptr, nullptr, 0);  // 默认标志为 0
-        if (result == NO_ERROR) {
-            qDebug() << "Drive mapped successfully: " << driveLetter;
-        } else {
-            qDebug() << "Failed to map drive. Error code:" << result;
-        }
+    // 调用 WNetAddConnection2A
+    DWORD result = WNetAddConnection2A(&nr, nullptr, nullptr, 0);  // 默认标志为 0
+    if (result == NO_ERROR) {
+        qDebug() << "Drive mapped successfully: " << driveLetter;
+    } else {
+        qDebug() << "Failed to map drive. Error code:" << result;
     }
 }
 

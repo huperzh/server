@@ -13,7 +13,8 @@ public:
     bool shared(const QString &path, QString &errMsg);
     bool searchDir(const QString& hostName);
     void searchHost();
-    void setFolder(const QString &deviceName);
+    void setDevice(const QString &deviceName);
+    void setFolder(const QString &folderName);
     QMap<QString, QString> getMappedNetworkDrives();
     QStringList getMappedDrives();
 
