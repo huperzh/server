@@ -32,9 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&udpBroadCast, &UDPBroadcast::notifyDirectories, this, [=](const QJsonObject& deviceDirectories){
         QString devicename = deviceDirectories["devicename"].toString();
         qDebug() << "devicename = " << devicename;
-        QJsonArray array = deviceDirectories["sharedirectory"].toArray();
         shareDirectory.setFolder(devicename);
-
     });
 
     return;
