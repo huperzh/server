@@ -29,6 +29,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    connect(&udpBroadCast, &UDPBroadcast::notifyDirectories, this, [=](const QJsonObject& deviceDirectories){
+        QString devicename = deviceDirectories["devicename"].toString();
+        qDebug() << "devicename = " << devicename;
+        QJsonArray array = deviceDirectories["sharedirectory"].toArray();
+        shareDirectory.setFolder(devicename);
+
+    });
+
     return;
     udpSocket = new QUdpSocket(this);
     udpSocket->setSocketOption(QAbstractSocket::MulticastLoopbackOption, 1);

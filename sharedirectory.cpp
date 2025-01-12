@@ -27,6 +27,7 @@ ShareDirectory::ShareDirectory(QObject *parent)
     });
 
     timer->start(1000);
+
 }
 
 bool ShareDirectory::shared(const QString &path, QString &errMsg)
@@ -201,7 +202,6 @@ void ShareDirectory::setFolder(const QString &deviceName) {
         nr.lpRemoteName = QDir::toNativeSeparators(path).toLocal8Bit().data();
         nr.lpProvider = nullptr;
 
-        continue;
         // 调用 WNetAddConnection2A
         DWORD result = WNetAddConnection2A(&nr, nullptr, nullptr, 0);  // 默认标志为 0
         if (result == NO_ERROR) {

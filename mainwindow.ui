@@ -199,7 +199,7 @@
        </property>
        <property name="geometry">
         <rect>
-         <x>150</x>
+         <x>80</x>
          <y>190</y>
          <width>80</width>
          <height>30</height>
@@ -243,9 +243,9 @@
       <widget class="QPushButton" name="pushButtonBroadcastHost">
        <property name="geometry">
         <rect>
-         <x>280</x>
+         <x>239</x>
          <y>190</y>
-         <width>100</width>
+         <width>141</width>
          <height>30</height>
         </rect>
        </property>
@@ -263,12 +263,12 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>80</width>
+         <width>16777215</width>
          <height>30</height>
         </size>
        </property>
        <property name="text">
-        <string>广播共享信息</string>
+        <string>广播本机共享信息</string>
        </property>
       </widget>
       <widget class="QPushButton" name="pushButtonSearchShared">

@@ -8,12 +8,12 @@
 #include <QNetworkInterface>
 #include <QTime>
 
+#define PORT 37282
 class UDPBroadcast : public QObject
 {
 private:
     Q_OBJECT
     QUdpSocket *udpSocket;
-    QString localHostName;
     QList<QHostAddress> broadcastList;
     void setBroadcastAddresses();
 
@@ -24,6 +24,7 @@ public:
 
 signals:
     void notifyNewMessage(const QByteArray& message);
+    void notifyDirectories(const QJsonObject& deviceDirectories);
 
 public slots:
     void broadcastMessage(const QString& message);

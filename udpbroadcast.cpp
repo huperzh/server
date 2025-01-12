@@ -6,9 +6,8 @@
 UDPBroadcast::UDPBroadcast(QObject *parent) : QObject(parent)
 {
     udpSocket = new QUdpSocket(this);
-    localHostName = QHostInfo::localHostName();
     setBroadcastAddresses();
-    udpSocket->bind(QHostAddress::Any, 37282);
+    udpSocket->bind(QHostAddress::Any, PORT);
     connect(udpSocket, SIGNAL(readyRead()), this, SLOT(readPendingMessages()));
     connect(this, SIGNAL(notifyNewMessage(const QByteArray&)), this, SLOT(recvMessage(const QByteArray&)));
 }
@@ -35,12 +34,13 @@ void UDPBroadcast::sendHostInfo(const QJsonArray &shareDir)
 
 void UDPBroadcast::recvMessage(const QByteArray &message)
 {
-    qDebug() << "message = " << QJsonDocument::fromJson(message).toJson().data();
+    // qDebug() << "message = " << QJsonDocument::fromJson(message).toJson().data();
     QJsonDocument jsonDoc = QJsonDocument::fromJson(message);
     // 检查解析是否成功
     if (!jsonDoc.isNull() && jsonDoc.isObject()) {
-        QJsonObject jsonObject = jsonDoc.object();
-        qDebug() << "devicename:" << jsonObject["devicename"].toString();
+        QJsonObject obj = jsonDoc.object();
+        emit notifyDirectories(obj);
+     //   qDebug() << "devicename:" << jsonObject["devicename"].toString();
     } else {
         qDebug() << "Invalid JSON or not a JSON object!";
     }
@@ -52,7 +52,7 @@ void UDPBroadcast::broadcastMessage(const QString& message)
     auto broadcastSet = broadcastList.toSet();
     foreach (const QHostAddress &broadcast, broadcastSet) {
         qDebug() << "broadcast = " << broadcast;
-        int size = udpSocket->writeDatagram(message.toUtf8(), broadcast, 37282);
+        int size = udpSocket->writeDatagram(message.toUtf8(), broadcast, PORT);
         if (-1 == size) {
             qDebug() << "writeDatagram error";
         } else {
