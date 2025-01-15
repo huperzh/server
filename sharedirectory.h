@@ -1,4 +1,4 @@
-#ifndef SHAREDIRECTORY_H
+﻿#ifndef SHAREDIRECTORY_H
 #define SHAREDIRECTORY_H
 
 #include <QObject>
@@ -11,8 +11,7 @@ public:
     explicit ShareDirectory(QObject *parent = nullptr);
     const QJsonArray& getArray() const { return sharedArray; }
     bool shared(const QString &path, QString &errMsg);
-    bool searchDir(const QString& hostName);
-    void searchHost();
+    bool searchHost(const QString& hostName);
     void setDevice(const QString &deviceName);
     void setFolder(const QString &folderName);
     QMap<QString, QString> getMappedNetworkDrives();

@@ -55,6 +55,8 @@ private slots:
 
     void on_pushButtonNet2LocaGet_clicked();
 
+    void on_pushButtonSearchNetSharedDir_clicked();
+
 private:
     void getNetPC();
     bool isLocalAddress(const QHostAddress &addr);

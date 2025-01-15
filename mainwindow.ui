@@ -47,9 +47,9 @@
       <widget class="QLineEdit" name="lineEditDirShare">
        <property name="geometry">
         <rect>
-         <x>7</x>
+         <x>67</x>
          <y>10</y>
-         <width>391</width>
+         <width>331</width>
          <height>30</height>
         </rect>
        </property>
@@ -72,8 +72,8 @@
       <widget class="QPushButton" name="pushButtonShare">
        <property name="geometry">
         <rect>
-         <x>180</x>
-         <y>100</y>
+         <x>10</x>
+         <y>110</y>
          <width>80</width>
          <height>30</height>
         </rect>
@@ -103,8 +103,8 @@
       <widget class="QPushButton" name="pushButtonSelect">
        <property name="geometry">
         <rect>
-         <x>50</x>
-         <y>100</y>
+         <x>10</x>
+         <y>60</y>
          <width>80</width>
          <height>30</height>
         </rect>
@@ -128,14 +128,14 @@
         </size>
        </property>
        <property name="text">
-        <string>选择</string>
+        <string>选择目录</string>
        </property>
       </widget>
       <widget class="QPushButton" name="pushButtonDeleteShare">
        <property name="geometry">
         <rect>
-         <x>300</x>
-         <y>100</y>
+         <x>100</x>
+         <y>110</y>
          <width>80</width>
          <height>30</height>
         </rect>
@@ -165,8 +165,8 @@
       <widget class="QPushButton" name="pushButtonNet2Local">
        <property name="geometry">
         <rect>
-         <x>280</x>
-         <y>350</y>
+         <x>140</x>
+         <y>290</y>
          <width>111</width>
          <height>30</height>
         </rect>
@@ -199,7 +199,7 @@
        </property>
        <property name="geometry">
         <rect>
-         <x>80</x>
+         <x>20</x>
          <y>190</y>
          <width>80</width>
          <height>30</height>
@@ -230,8 +230,8 @@
       <widget class="QCheckBox" name="checkBoxEnableBroad">
        <property name="geometry">
         <rect>
-         <x>110</x>
-         <y>280</y>
+         <x>240</x>
+         <y>250</y>
          <width>101</width>
          <height>21</height>
         </rect>
@@ -243,7 +243,7 @@
       <widget class="QPushButton" name="pushButtonBroadcastHost">
        <property name="geometry">
         <rect>
-         <x>239</x>
+         <x>260</x>
          <y>190</y>
          <width>141</width>
          <height>30</height>
@@ -274,8 +274,8 @@
       <widget class="QPushButton" name="pushButtonSearchShared">
        <property name="geometry">
         <rect>
-         <x>230</x>
-         <y>280</y>
+         <x>290</x>
+         <y>111</y>
          <width>111</width>
          <height>30</height>
         </rect>
@@ -305,8 +305,8 @@
       <widget class="QPushButton" name="pushButtonNet2LocaGet">
        <property name="geometry">
         <rect>
-         <x>120</x>
-         <y>350</y>
+         <x>10</x>
+         <y>290</y>
          <width>111</width>
          <height>30</height>
         </rect>
@@ -331,6 +331,94 @@
        </property>
        <property name="text">
         <string>获取映射目录</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_4">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>16</y>
+         <width>71</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>共享目录</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="lineEditLanHost">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>340</y>
+         <width>311</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>SZ-72198398</string>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_5">
+       <property name="geometry">
+        <rect>
+         <x>13</x>
+         <y>346</y>
+         <width>71</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>局域网主机</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButtonSearchNetSharedDir">
+       <property name="geometry">
+        <rect>
+         <x>289</x>
+         <y>380</y>
+         <width>111</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>111</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>80</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>查询网络共享目录</string>
        </property>
       </widget>
      </widget>

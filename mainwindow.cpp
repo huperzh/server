@@ -14,6 +14,11 @@
 #include <QFileDialog>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <iostream>
+#include <QString>
+#include <QList>
+
+#include <windows.h>
 
 #define CMD_SEND_DISP QString("[%1]# SEND ASCII TO %2:%3")
 #define CMD_RECV_DISP QString("[%1]# RECV ASCII FROM %2:%3")
@@ -89,10 +94,10 @@ MainWindow::~MainWindow()
 bool MainWindow::isLocalHost(const QString &ipAddr)
 {
     auto interfaces = QNetworkInterface::allInterfaces();
-    for (const QNetworkInterface &interface : interfaces) {
-        if (interface.flags().testFlag(QNetworkInterface::IsUp) &&
-            interface.flags().testFlag(QNetworkInterface::IsRunning)) {
-            QList<QNetworkAddressEntry> entries = interface.addressEntries();
+    for (const QNetworkInterface &inter : interfaces) {
+        if (inter.flags().testFlag(QNetworkInterface::IsUp) &&
+            inter.flags().testFlag(QNetworkInterface::IsRunning)) {
+            QList<QNetworkAddressEntry> entries = inter.addressEntries();
             for (const QNetworkAddressEntry &entry : entries) {
                 QHostAddress ip = entry.ip();
                 if (ip.protocol() == QAbstractSocket::IPv4Protocol) {
@@ -103,8 +108,6 @@ bool MainWindow::isLocalHost(const QString &ipAddr)
             }
         }
     }
-
-
 
     return false;
 }
@@ -559,7 +562,6 @@ void queryShares(const std::wstring& computerName) {
         if (buffer) {
             NetApiBufferFree(buffer);
         }
-
     } while (resumeHandle != 0);
 }
 
@@ -716,16 +718,16 @@ void MainWindow::on_pushButtonSearchShared_clicked()
     QString hostName = QHostInfo::localHostName();
     qDebug() << "hostName = " << hostName;
     QString localtName = QString("\\\\%1").arg(hostName);
-    shareDirectory.searchDir(localtName);
+    shareDirectory.searchHost(localtName);
 }
 
 void MainWindow::on_pushButtonNet2Local_clicked()
 {
     // 测试局域网的主机名称
-    QString name("Desktop-venpb2n");
-    QString testNetName = QString("\\\\%1").arg(name);
+    // setFolder("\\\\Desktop-venpb2n", QString::fromLocal8Bit("相机1"));
+    QString localNetName("Desktop-venpb2n");
+    QString testNetName = QString("\\\\%1").arg(localNetName);
     shareDirectory.setFolder(testNetName);
-    //setFolder("\\\\Desktop-venpb2n", QString::fromLocal8Bit("相机1"));
 }
 
 void MainWindow::on_pushButtonNet2LocaGet_clicked()
@@ -743,16 +745,6 @@ void MainWindow::on_pushButtonNet2LocaGet_clicked()
         }
     }
 }
-
-#include <windows.h>
-#include <iostream>
-#include <QString>
-#include <QList>
-
-#include <windows.h>
-#include <iostream>
-#include <QString>
-#include <QList>
 
 // 共享的但是没有映射驱动的目录也会被获取到
 QList<QString> getMappedNetworkDrives() {
@@ -800,4 +792,8 @@ QList<QString> getMappedNetworkDrives() {
     return networkDrives;
 }
 
-
+void MainWindow::on_pushButtonSearchNetSharedDir_clicked()
+{
+    QString hostName = ui->lineEditLanHost->text();
+    shareDirectory.searchHost(hostName);
+}

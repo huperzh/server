@@ -1,4 +1,4 @@
-#include "sharedirectory.h"
+﻿#include "sharedirectory.h"
 #include <QJsonArray>
 #include <QDir>
 #include <windows.h>
@@ -10,6 +10,9 @@
 #include <QDebug>
 #include <QString>
 #include <iostream>
+#include <Mprapi.h>
+#include <QDebug>
+#include <QStringList>
 
 #pragma comment(lib, "Mpr.lib")
 #pragma comment(lib, "Netapi32.lib")
@@ -20,7 +23,7 @@ ShareDirectory::ShareDirectory(QObject *parent)
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [=]{
         QString hostName = QHostInfo::localHostName();
-        bool ret = searchDir(hostName);
+        bool ret = searchHost(hostName);
         if (ret) {
             timer->stop();
         }
@@ -30,6 +33,162 @@ ShareDirectory::ShareDirectory(QObject *parent)
 
 }
 
+#include <windows.h>
+#include <aclapi.h>
+#include <tchar.h>
+#include <iostream>
+void addEveryoneToDir(LPCTSTR path) {
+
+    PSECURITY_DESCRIPTOR pSD = NULL;
+    PACL pDacl = NULL;
+    PSID pOwnerSid = NULL;
+    PSID pGroupSid = NULL;
+    PACL pSacl = NULL;
+
+    // 获取指定路径的安全信息
+    DWORD result = GetNamedSecurityInfo(
+        path,                // 文件路径
+        SE_FILE_OBJECT,      // 对象类型
+        OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION | DACL_SECURITY_INFORMATION,  // 请求的安全信息
+        &pOwnerSid,          // 所有者 SID
+        &pGroupSid,          // 组 SID
+        &pDacl,              // DACL
+        &pSacl,              // SACL
+        &pSD                  // 安全描述符
+        );
+
+    if (result != ERROR_SUCCESS) {
+        std::wcout << L"Failed to get security info. Error: " << result << std::endl;
+        DWORD error = GetLastError();
+        std::wcout << L"GetLastError: " << error << std::endl;
+        return;
+    }
+
+    // 获取 SID
+    PSID pEveryoneSid = NULL;
+    SID_IDENTIFIER_AUTHORITY SIDAuthWorld = SECURITY_WORLD_SID_AUTHORITY;
+
+    if (!AllocateAndInitializeSid(
+            &SIDAuthWorld, 1,
+            SECURITY_WORLD_RID, 0, 0, 0, 0, 0, 0, 0,
+            &pEveryoneSid)) {
+        std::wcout << L"Failed to initialize Everyone SID." << std::endl;
+        return;
+    }
+    // 设置新的权限
+    EXPLICIT_ACCESS ea;
+    ZeroMemory(&ea, sizeof(EXPLICIT_ACCESS));
+
+    ea.grfAccessPermissions = GENERIC_READ; // 读取权限
+    ea.grfAccessMode = GRANT_ACCESS;
+    ea.grfInheritance= NO_INHERITANCE;
+    ea.Trustee.TrusteeForm = TRUSTEE_IS_SID;
+    ea.Trustee.ptstrName = (LPTSTR)pEveryoneSid;
+
+    // 创建一个新的 DACL，将 `Everyone` 添加到其中
+    PACL pNewDacl = NULL;
+    result = SetEntriesInAcl(1, &ea, pDacl, &pNewDacl);
+
+    if (result != ERROR_SUCCESS) {
+        std::wcout << L"Failed to set entries in ACL. Error: " << result << std::endl;
+        return;
+    }
+
+    // 设置新的安全信息
+    result = SetNamedSecurityInfoA(
+        (LPTSTR)path,  // 文件路径
+        SE_FILE_OBJECT,            // 对象类型
+        DACL_SECURITY_INFORMATION, // 设置 DACL
+        pOwnerSid,                 // 设置所有者
+        pGroupSid,                 // 设置组
+        pNewDacl,                  // 设置 DACL
+        pSacl                      // 设置 SACL
+        );
+
+    if (result != ERROR_SUCCESS) {
+        std::wcout << L"Failed to set security info. Error: " << result << std::endl;
+        DWORD error = GetLastError();
+        std::wcout << L"GetLastError: " << error << std::endl;
+    } else {
+        std::wcout << L"Security info set successfully!" << std::endl;
+    }
+
+    // 清理资源
+    if (pSD) {
+        LocalFree(pSD);
+    }
+    if (pEveryoneSid) {
+        FreeSid(pEveryoneSid);
+    }
+    if (pNewDacl) {
+        LocalFree(pNewDacl);
+    }
+}
+void addEveryoneToDir1(LPCTSTR dirPath) {
+    EXPLICIT_ACCESS ea = {0};
+    PACL pOldDACL = NULL, pNewDACL = NULL;
+    PSECURITY_DESCRIPTOR pSD = NULL;
+    DWORD result;
+
+    // Step 1: Get the current DACL
+    result = GetNamedSecurityInfo(
+        dirPath,
+        SE_FILE_OBJECT,       // Type of object (file or directory)
+        DACL_SECURITY_INFORMATION, // Get DACL
+        NULL,                 // Owner
+        NULL,                 // Primary group
+        &pOldDACL,            // Existing DACL
+        NULL,                 // SACL
+        &pSD                  // Security Descriptor
+        );
+
+    if (result != ERROR_SUCCESS) {
+        std::cerr << "Failed to get security info. Error: " << result << std::endl;
+       // return;
+    }
+
+    // Step 2: Initialize an EXPLICIT_ACCESS structure for the new ACE
+    ea.grfAccessPermissions = GENERIC_READ | GENERIC_EXECUTE; // Grant read and execute permissions
+    ea.grfAccessMode = GRANT_ACCESS;                         // Allow access
+    ea.grfInheritance = SUB_CONTAINERS_AND_OBJECTS_INHERIT;  // Inheritance
+    ea.Trustee.TrusteeForm = TRUSTEE_IS_NAME;
+    ea.Trustee.TrusteeType = TRUSTEE_IS_WELL_KNOWN_GROUP;
+    ea.Trustee.ptstrName = (LPTSTR)_T("Everyone");           // Trustee is "Everyone"
+
+    // Step 3: Create a new ACL with the new ACE
+    result = SetEntriesInAcl(1, &ea, pOldDACL, &pNewDACL);
+    if (result != ERROR_SUCCESS) {
+        std::cerr << "Failed to set entries in ACL. Error: " << result << std::endl;
+        if(ERROR_FILE_NOT_FOUND == result) {
+            std::cerr << "ERROR_FILE_NOT_FOUND " << result << std::endl;
+        }
+        if (pSD) LocalFree(pSD);
+       // return;
+    }
+
+    // Step 4: Apply the new DACL to the object
+    result = SetNamedSecurityInfo(
+        (LPTSTR)dirPath,
+        SE_FILE_OBJECT,
+        DACL_SECURITY_INFORMATION,
+        NULL,      // Owner
+        NULL,      // Group
+        pNewDACL,  // New DACL
+        NULL       // SACL
+        );
+
+    if (result != ERROR_SUCCESS) {
+        std::cerr << "Failed to set security info. Error: " << result << std::endl;
+    } else {
+        std::cout << "Successfully added Everyone to the directory!" << std::endl;
+    }
+
+    // Cleanup
+    if (pSD) LocalFree(pSD);
+    if (pNewDACL) LocalFree(pNewDACL);
+}
+
+#include "sddl.h"
 bool ShareDirectory::shared(const QString &path, QString &errMsg)
 {
     QString netName;
@@ -42,12 +201,13 @@ bool ShareDirectory::shared(const QString &path, QString &errMsg)
     DWORD parm_err;
     std::wstring wShareName = path.toStdWString();
     LMSTR share = const_cast<LMSTR>(wShareName.c_str());
+    LPCTSTR shared_cts = (path.toLocal8Bit().data());
     const std::wstring wPackageName = netName.toStdWString();
     LMSTR lPackageName = const_cast<LMSTR>(wPackageName.c_str());
     // 设置共享信息
     SHARE_INFO_2 si = {0};  // 零初始化结构体
     si.shi2_type = STYPE_DISKTREE; // 磁盘共享
-    si.shi2_permissions = 0; // 权限废弃，设置为 0
+    si.shi2_permissions = ACCESS_READ; // 权限废弃，设置为 0
     si.shi2_max_uses = -1; // 不限制用户数
     si.shi2_current_uses = 0;  // 当前连接的用户数，通常初始化为 0
     si.shi2_netname = lPackageName;
@@ -55,9 +215,25 @@ bool ShareDirectory::shared(const QString &path, QString &errMsg)
     si.shi2_passwd = NULL;
     qDebug() << "shi2_path = " << path;
     qDebug() << "shi2_netname = " << netName;
+
+    LPCSTR sddl = "D:(A;OICI;GR;;;WD)"; // Everyone (WD) 读取权限 (GR)
+    PSECURITY_DESCRIPTOR pSD = NULL;
+
     NET_API_STATUS status = NetShareAdd(NULL, 2, (LPBYTE)&si, &parm_err);
     if (NERR_Success == status) {
         append(netName);
+        // 2. 添加 Everyone 用户的权限
+        // addEveryoneToDir(shared_cts);
+
+        // if (ConvertStringSecurityDescriptorToSecurityDescriptorA(
+        //         sddl, SDDL_REVISION_1, &pSD, NULL)) {
+        //     qDebug() << "Conversion successful!";
+        //     // 在这里可以使用 pSD 作为安全描述符传递给其他 API
+        //     // 例如设置文件或共享的权限
+
+        //     // 释放内存
+        //     LocalFree(pSD);
+        // }
         errMsg = QString("Shared directory success, ret code :%1").arg(status);
         return true;
     } else {
@@ -75,8 +251,9 @@ bool ShareDirectory::append(const QString &netname)
     return true;
 }
 
-bool ShareDirectory::searchDir(const QString& hostName)
+bool ShareDirectory::searchHost(const QString& hostName)
 {
+    qDebug() << "hostName = " << hostName;
     LMSTR share = const_cast<LMSTR>(hostName.toStdWString().c_str());
     DWORD resumeHandle = 0;
     QJsonArray emptyArray;
@@ -109,11 +286,6 @@ bool ShareDirectory::searchDir(const QString& hostName)
     return sharedArray.size();
 }
 
-void ShareDirectory::searchHost()
-{
-
-}
-
 void ShareDirectory::setDevice(const QString &deviceName)
 {
     QString remote = QString("\\\\%1").arg(deviceName);
@@ -136,7 +308,6 @@ void ShareDirectory::setDevice(const QString &deviceName)
         }
         qDebug() << "path = " << path;
         qDebug() << "baseName = " << dirInfo.baseName();
-        // 配置 NETRESOURCE 结构体
         NETRESOURCEA nr;
         ZeroMemory(&nr, sizeof(NETRESOURCEA));
         nr.dwType = RESOURCETYPE_DISK;
@@ -169,6 +340,7 @@ bool ShareDirectory::getNetName(const QString &path, QString &netname, QString &
     }
 
     QString pathDisk = path.at(0);
+    qDebug() << "pathDisk = " << pathDisk;
     QFileInfoList drives = QDir::drives();
     auto it = std::find_if(drives.begin(), drives.end(), [=](const QFileInfo& drive) {
         return drive.absolutePath().contains(pathDisk, Qt::CaseInsensitive);
@@ -178,10 +350,10 @@ bool ShareDirectory::getNetName(const QString &path, QString &netname, QString &
         qDebug("disk is error");
     }
 
-    int lastIndex = path.lastIndexOf('\\');
+    int lastIndex = path.lastIndexOf(QDir::separator());
     netname = path.mid(lastIndex + 1);  // 获取当前文件夹名
-    QString name(path);
-    netname = name.replace("\\", "_", Qt::CaseInsensitive);
+    // QString name(path);
+    // netname = name.replace("\\", "_", Qt::CaseInsensitive);
     qDebug() << "netname = " << netname;
     qDebug() << "sharedArray = " << sharedArray;
     qDebug() << "oldName = " << netname;
@@ -241,55 +413,6 @@ void ShareDirectory::setFolder(const QString &folderName) {
     }
 }
 
-// QList<QString> ShareDirectory::getMappedNetworkDrives() {
-//     QList<QString> networkDrives;
-
-//     // 打开一个句柄，用于枚举当前用户的所有网络连接
-//     HANDLE hEnum;
-//     DWORD dwResult = WNetOpenEnumA(RESOURCE_CONNECTED, RESOURCETYPE_DISK, 0, NULL, &hEnum);
-//     if (dwResult != NO_ERROR) {
-//         std::cerr << "WNetOpenEnum failed with error code: " << dwResult << std::endl;
-//         return networkDrives; // 返回空列表
-//     }
-
-//     // 准备缓冲区来存储枚举结果
-//     DWORD bufferSize = 16384; // 16KB 缓冲区
-//     char buffer[16384];
-//     LPNETRESOURCEA lpnr = (LPNETRESOURCEA)buffer;
-//     DWORD entries = -1; // 枚举所有条目
-
-//     while (true) {
-//         ZeroMemory(buffer, bufferSize);
-//         DWORD dwSize = bufferSize;
-//         DWORD dwCount = entries;
-
-//         dwResult = WNetEnumResourceA(hEnum, &dwCount, lpnr, &dwSize);
-//         if (dwResult == ERROR_NO_MORE_ITEMS) {
-//             break; // 没有更多条目
-//         }
-//         if (dwResult != NO_ERROR) {
-//             std::cerr << "WNetEnumResource failed with error code: " << dwResult << std::endl;
-//             break;
-//         }
-
-//         // 遍历返回的资源条目
-//         for (DWORD i = 0; i < dwCount; ++i) {
-//             if (lpnr[i].dwType == RESOURCETYPE_DISK) {
-//                 // 添加远程路径到列表
-//                 networkDrives.append(QString::fromLocal8Bit(lpnr[i].lpRemoteName));
-//             }
-//         }
-//     }
-
-//     WNetCloseEnum(hEnum); // 关闭枚举句柄
-//     return networkDrives;
-// }
-
-#include <Windows.h>
-#include <Mprapi.h>
-#include <QDebug>
-#include <QStringList>
-
 QStringList ShareDirectory::getMappedDrives() {
     QStringList mappedDrives;
 
@@ -308,7 +431,7 @@ QStringList ShareDirectory::getMappedDrives() {
         return mappedDrives;  // 返回空列表
     }
 
-    // 逐步枚举资源
+    // 枚举资源
     do {
         lpBuffer = (LPBYTE)malloc(dwBufferSize);
         if (lpBuffer == NULL) {
@@ -339,13 +462,10 @@ QStringList ShareDirectory::getMappedDrives() {
         free(lpBuffer);
         lpBuffer = NULL;
     } while (dwResult == ERROR_MORE_DATA);
-
     // 关闭枚举句柄
     WNetCloseEnum(hEnum);
-
     return mappedDrives;
 }
-
 
 // 共享的但是没有映射驱动的目录也会被获取到
 QMap<QString, QString> ShareDirectory::getMappedNetworkDrives() {
