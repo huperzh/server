@@ -39,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent) :
         QJsonArray arrayDir = deviceDirectories["sharedirectory"].toArray();
         qDebug() << "arrayDir = " << arrayDir;
         qDebug() << "devicename = " << devicename;
-        shareDirectory.setDevice(devicename);
+        shareDirectory.mapDevice(devicename);
     });
 
     return;
@@ -718,32 +718,26 @@ void MainWindow::on_pushButtonSearchShared_clicked()
     QString hostName = QHostInfo::localHostName();
     qDebug() << "hostName = " << hostName;
     QString localtName = QString("\\\\%1").arg(hostName);
-    shareDirectory.searchHost(localtName);
+    shareDirectory.searchDirectories(localtName);
 }
 
 void MainWindow::on_pushButtonNet2Local_clicked()
 {
     // 测试局域网的主机名称
     // setFolder("\\\\Desktop-venpb2n", QString::fromLocal8Bit("相机1"));
-    QString localNetName("Desktop-venpb2n");
-    QString testNetName = QString("\\\\%1").arg(localNetName);
-    shareDirectory.setFolder(testNetName);
+    QString netHostName(ui->lineEditLanHost->text());
+    shareDirectory.mapDevice(netHostName);
+}
+
+void MainWindow::on_pushButtonCancelConnect_clicked()
+{
+    QString netHostName(ui->lineEditLanHost->text());
+    shareDirectory.cancelDevice(netHostName);
 }
 
 void MainWindow::on_pushButtonNet2LocaGet_clicked()
 {
-    QMap<QString, QString> network2Local = shareDirectory.getMappedNetworkDrives();
-    qDebug() << QDir::drives();
-    if (network2Local.isEmpty()) {
-        qDebug()  << "No network drives are mapped.";
-    } else {
-        qDebug() << "Mapped network drives:";
-        auto keys = network2Local.keys();
-        for (const QString &drive : keys) {
-            qDebug() << "remote = " << drive.toLocal8Bit().data()
-                     << "local = " << network2Local.value(drive);
-        }
-    }
+    QMap<QString, QString> network2Local = shareDirectory.enumMappedNetworkDrives();
 }
 
 // 共享的但是没有映射驱动的目录也会被获取到
@@ -795,5 +789,6 @@ QList<QString> getMappedNetworkDrives() {
 void MainWindow::on_pushButtonSearchNetSharedDir_clicked()
 {
     QString hostName = ui->lineEditLanHost->text();
-    shareDirectory.searchHost(hostName);
+    shareDirectory.searchDirectories(hostName);
 }
+

@@ -11,22 +11,38 @@ public:
     explicit ShareDirectory(QObject *parent = nullptr);
     const QJsonArray& getArray() const { return sharedArray; }
     bool shared(const QString &path, QString &errMsg);
-    bool searchHost(const QString& hostName);
-    void setDevice(const QString &deviceName);
+    bool searchDirectories(const QString& hostName);
+    /**
+     * @brief 共享目录
+     * @param 远程共享目录
+     * @return 存在 true
+     */
+    void mapDevice(const QString &deviceName);
+    void cancelDevice(const QString &networkPath, bool forceDisconnect = false);
     void setFolder(const QString &folderName);
-    QMap<QString, QString> getMappedNetworkDrives();
-    QStringList getMappedDrives();
+    /**
+     * @brief 查询共享目录是否已经存在映射
+     * @param 远程共享目录
+     * @return 存在 true
+     */
+    bool containMapped(const QString& remoteName);
+    /**
+     * @brief 获取本地映射的网络驱动器
+     * @return 返回key 远程目录路径(\\\\hostname\\test) ， value 本地磁盘名(Y:)
+     */
+    QMap<QString, QString> enumMappedNetworkDrives();
 
 signals:
 
 private:
     QString findAvailableDriveLetter();
+    bool isDriveMapped(const QString &driveLetter);
 
     void saveArray();
     /**
-     * @brief   获取网络共享名称, 判断是否已经存在共享的名称, 若存在相同的名称后面加_数字
+     * @brief   从路径中获取网络共享名称
      * @param   输入的路径名称
-     * @return  返回网络共享名称 唯一性
+     * @return  返回网络共享名称
      */
     bool getNetName(const QString &path, QString &netname, QString &errMsg);
     /**
@@ -36,6 +52,7 @@ private:
      */
     bool append(const QString &path);
 
+private:
     QJsonArray sharedArray;
     QMap<QString, QString> remote2Local;
 };

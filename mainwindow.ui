@@ -190,7 +190,7 @@
         </size>
        </property>
        <property name="text">
-        <string>映射至本地</string>
+        <string>映射至本地驱动器</string>
        </property>
       </widget>
       <widget class="QPushButton" name="pushButtonNetPC">
@@ -374,7 +374,7 @@
         <string>SZ-72198398</string>
        </property>
        <property name="readOnly">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
       </widget>
       <widget class="QLabel" name="label_5">
@@ -419,6 +419,37 @@
        </property>
        <property name="text">
         <string>查询网络共享目录</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButtonCancelConnect">
+       <property name="geometry">
+        <rect>
+         <x>280</x>
+         <y>290</y>
+         <width>80</width>
+         <height>30</height>
+        </rect>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>80</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>80</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>取消映射</string>
        </property>
       </widget>
      </widget>
@@ -637,7 +668,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
      <x>0</x>
      <y>0</y>
      <width>1517</width>
-     <height>21</height>
+     <height>18</height>
     </rect>
    </property>
   </widget>
