@@ -17,6 +17,8 @@
 #include <iostream>
 #include <QString>
 #include <QList>
+#include <QTimer>
+#include <QCloseEvent>
 
 #include <windows.h>
 
@@ -29,19 +31,83 @@
  */
 quint16 cast_port = 520;
 QHostAddress multicastAddress("239.255.30.51");
+static QString deviceName;
+static QJsonArray arraySharedDir;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    connect(&udpBroadCast, &UDPBroadcast::notifyDirectories, this, [=](const QJsonObject& deviceDirectories){
-        QString devicename = deviceDirectories["devicename"].toString();
-        QJsonArray arrayDir = deviceDirectories["sharedirectory"].toArray();
-        qDebug() << "arrayDir = " << arrayDir;
-        qDebug() << "devicename = " << devicename;
-        shareDirectory.mapDevice(devicename);
+    setWindowTitle(QApplication::applicationName());
+    static bool enableDebug(true);
+    connect(&udpBroadCast, &UDPBroadcast::notifyDirectories, this, [=](const QJsonObject& deviceDirs){
+        auto tempName = deviceDirs["devicename"].toString();
+        auto tempDir = deviceDirs["sharedirectory"].toArray();
+        auto shared = deviceDirs["shared"].toInt();
+        deviceName = tempName;
+        arraySharedDir = tempDir;
+        if (shared) {
+            shareDirectory.mapDevice(deviceDirs);
+        } else {
+            int cancel = deviceDirs["cancelconnect"].toInt();
+            if( 1 == cancel) {
+                bool ret = shareDirectory.cancelAll();
+                if (ret) {
+                    qDebug("server cancel all shared directory files");
+                    if (startClose) {
+                        // 等待接收数据
+                        closeEv->accept();
+                    }
+                }
+            } else {
+                bool ret = shareDirectory.cancelDevice(deviceName);
+                if (ret) {
+                    enableDebug = true;
+                    qDebug("client cancelDevice true");
+                    QJsonObject respon(deviceDirs);
+                    respon["cancelconnect"] = 1;
+                    qDebug("client send back message");
+                    udpBroadCast.sendToServer(respon);
+                } else if (enableDebug) {
+                    enableDebug = false;
+                    qDebug("client cancelDevice false");
+                }
+            }
+
+            if (startClose) {
+
+            }
+        }
+
+        if (arraySharedDir != tempDir) {
+            qDebug("devicename = %s", deviceName.toLatin1().data());
+            qDebug() << "arraySharedDir = " << arraySharedDir;
+        }
     });
 
+    timerApp = new QTimer(this);
+    connect(timerApp, &QTimer::timeout, this, [=]{
+        QString path(ui->lineEditDirShare->text());
+        QString errMsg;
+        bool enable = ui->checkBoxEnableShared->isChecked();
+        if (enable && !path.isEmpty()) {
+            bool ret = shareDirectory.shared(QDir::toNativeSeparators(path), errMsg);
+            if (ret) {
+                qDebug() << "shared success direcotry.........." << errMsg;
+            } else {
+                qDebug() << "shared failed direcotry" << errMsg;
+            }
+        }
+
+        auto arr = shareDirectory.getArray();
+        if (arr.size()) {
+            qDebug() << "arr = " << arr;
+            ui->labelMSG->setText(QString::number(enable));
+            udpBroadCast.sendSharedInfo(arr, enable);
+        }
+    });
+
+    timerApp->start(1000);
     return;
     udpSocket = new QUdpSocket(this);
     udpSocket->setSocketOption(QAbstractSocket::MulticastLoopbackOption, 1);
@@ -84,6 +150,8 @@ MainWindow::MainWindow(QWidget *parent) :
     });
 
     getCurrentDevice();
+
+
 }
 
 MainWindow::~MainWindow()
@@ -424,51 +492,15 @@ void MainWindow::on_pushButtonShare_clicked()
 
 void MainWindow::on_pushButtonShare_clicked()
 {
-    // QDir hostName("\\DESKTOP-FNNNJ3M");
-    // setFolder(hostName.absoluteFilePath(ui->lineEditDirShare->text()), "Z:");
     QString path(ui->lineEditDirShare->text());
     QString errMsg;
     bool ret = shareDirectory.shared(QDir::toNativeSeparators(path), errMsg);
     if (ret) {
-        udpBroadCast.sendHostInfo(shareDirectory.getArray());
-        qDebug() << "shared success direcotry" << errMsg;
+        udpBroadCast.sendSharedInfo(shareDirectory.getArray());
+        qDebug() << "shared success direcotry.........." << errMsg;
     } else {
         qDebug() << "shared failed direcotry" << errMsg;
     }
-
-    return;
-    SHARE_INFO_2 si;
-    DWORD parm_err;
-    // 设置共享信息
-    si.shi2_type = STYPE_DISKTREE; // 磁盘共享
-    si.shi2_permissions = 0; // 权限已被废弃，设置为 0
-    si.shi2_max_uses = -1; // 不限制用户数
-    si.shi2_current_uses = 0;  // 当前连接的用户数，通常初始化为 0
-    QString dir(ui->lineEditDirShare->text());
-    std::wstring wShareName = dir.toStdWString();
-    LMSTR share = const_cast<LMSTR>(wShareName.c_str());
-    si.shi2_path = share;   //
-    si.shi2_passwd = NULL;  // 不需要密码
-    path = dir;
-    // 获取最后一个反斜杠的位置
-    qDebug() << "toNativeSeparators =" << QDir::toNativeSeparators(dir);
-    int lastIndex = path.lastIndexOf('\\');
-    // 提取最后一个反斜杠后的文件夹名称
-    QString packageName = path.mid(lastIndex + 1);
-    std::wstring wPackageName = packageName.toStdWString();
-    LMSTR lPackageName = const_cast<LMSTR>(wPackageName.c_str());
-    si.shi2_netname = lPackageName;
-    // 输出结果
-    qDebug() << "last folder name:" << packageName;
-    // 添加共享
-    NET_API_STATUS status = NetShareAdd(NULL, 2, (LPBYTE)&si, &parm_err);
-    if (status == NERR_Success) {
-        std::cout << "Success share add" << parm_err << std::endl;
-    } else {
-        std::cout << "Failed share add" << status << std::endl;
-    }
-    qDebug() << "dir:" << dir;
-    qDebug() << "last folder name:" << packageName;
 }
 
 /*
@@ -479,6 +511,8 @@ void MainWindow::on_pushButtonShare_clicked()
  */
 void MainWindow::on_pushButtonDeleteShare_clicked()
 {
+    shareDirectory.cancelAll();
+    return;
     auto packageNames = netNameToPath.keys();
     for(auto pkg : packageNames) {
         std::wstring wPkg = pkg.toStdWString();
@@ -572,7 +606,7 @@ void MainWindow::on_pushButtonNetPC_clicked()
     QString hostName = QHostInfo::localHostName();
     QString netHostName("\\\\" + hostName);
     qDebug() << "hostNameDir" << netHostName;
-   // queryShares(L"\\\\Szmcs11175");
+    // queryShares(L"\\\\Szmcs11175");
     queryShares(netHostName.toStdWString().data());
     // listNetworkDevice();
 }
@@ -682,10 +716,6 @@ void MainWindow::on_checkBoxEnableBroad_clicked(bool checked)
     if(checked) {
         QString hostName = QHostInfo::localHostName();
         QDir hostNameDir("\\\\" + hostName);
-        qDebug() << "hostNameDir" << hostNameDir.path();
-        qDebug() << "Host name:" << hostName;
-        qDebug() << "Shared entryInfoList:" << hostNameDir.entryInfoList();
-        qDebug() << "Shared entryList:" << hostNameDir.entryList();
         QJsonObject obj;
         obj.insert("devicename", hostNameDir.absolutePath());
         int size = udpSocket->writeDatagram(QJsonDocument(obj).toJson(QJsonDocument::Compact), QHostAddress("255.255.255.255"), cast_port);
@@ -710,7 +740,7 @@ bool MainWindow::isLocalAddress(const QHostAddress &addr)
 
 void MainWindow::on_pushButtonBroadcastHost_clicked()
 {
-    udpBroadCast.sendHostInfo(shareDirectory.getArray());
+    udpBroadCast.sendSharedInfo(shareDirectory.getArray());
 }
 
 void MainWindow::on_pushButtonSearchShared_clicked()
@@ -718,7 +748,11 @@ void MainWindow::on_pushButtonSearchShared_clicked()
     QString hostName = QHostInfo::localHostName();
     qDebug() << "hostName = " << hostName;
     QString localtName = QString("\\\\%1").arg(hostName);
-    shareDirectory.searchDirectories(localtName);
+    int status = 0;
+    shareDirectory.search(localtName, status);
+    if (NERR_Success == status) {
+
+    }
 }
 
 void MainWindow::on_pushButtonNet2Local_clicked()
@@ -729,6 +763,7 @@ void MainWindow::on_pushButtonNet2Local_clicked()
     shareDirectory.mapDevice(netHostName);
 }
 
+// 取消映射，在需要刷机的工具下使用，不在开启共享的工具下使用
 void MainWindow::on_pushButtonCancelConnect_clicked()
 {
     QString netHostName(ui->lineEditLanHost->text());
@@ -789,6 +824,21 @@ QList<QString> getMappedNetworkDrives() {
 void MainWindow::on_pushButtonSearchNetSharedDir_clicked()
 {
     QString hostName = ui->lineEditLanHost->text();
-    shareDirectory.searchDirectories(hostName);
+    int status = -1;
+    shareDirectory.search(hostName, status);
+}
+
+
+void MainWindow::on_checkBoxEnableShared_clicked(bool checked)
+{
+
+}
+
+void MainWindow::closeEvent(QCloseEvent *closeEvent)
+{
+    // 发送取消共享
+    // 等待接收数据
+    udpBroadCast.exit(ui->checkBoxEnableShared->isChecked());
+    closeEvent->accept();
 }
 

@@ -13,7 +13,12 @@
 #include <Mprapi.h>
 #include <QDebug>
 #include <QStringList>
+#include <QJsonObject>
 #include "sddl.h"
+#include <windows.h>
+#include <aclapi.h>
+#include <tchar.h>
+#include <iostream>
 
 #pragma comment(lib, "Mpr.lib")
 #pragma comment(lib, "Netapi32.lib")
@@ -24,20 +29,23 @@ ShareDirectory::ShareDirectory(QObject *parent)
     QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, [=]{
         QString hostName = QHostInfo::localHostName();
-        bool ret = searchDirectories(hostName);
-        if (ret) {
+        int status = 0;
+        search(hostName, status);
+        qDebug() << "status = " << status;
+        if (NERR_Success == status) {
             timer->stop();
+        } else {
+            static int counter = 0;
+            if (++counter >= 5) {
+                timer->stop();
+            }
         }
     });
 
-    timer->start(1000);
+    timer->start(200);
     enumMappedNetworkDrives();
 }
 
-#include <windows.h>
-#include <aclapi.h>
-#include <tchar.h>
-#include <iostream>
 void addEveryoneToDir(LPCTSTR path) {
 
     PSECURITY_DESCRIPTOR pSD = NULL;
@@ -125,79 +133,22 @@ void addEveryoneToDir(LPCTSTR path) {
         LocalFree(pNewDacl);
     }
 }
-void addEveryoneToDir1(LPCTSTR dirPath) {
-    EXPLICIT_ACCESS ea = {0};
-    PACL pOldDACL = NULL, pNewDACL = NULL;
-    PSECURITY_DESCRIPTOR pSD = NULL;
-    DWORD result;
-
-    // Step 1: Get the current DACL
-    result = GetNamedSecurityInfo(
-        dirPath,
-        SE_FILE_OBJECT,       // Type of object (file or directory)
-        DACL_SECURITY_INFORMATION, // Get DACL
-        NULL,                 // Owner
-        NULL,                 // Primary group
-        &pOldDACL,            // Existing DACL
-        NULL,                 // SACL
-        &pSD                  // Security Descriptor
-        );
-
-    if (result != ERROR_SUCCESS) {
-        std::cerr << "Failed to get security info. Error: " << result << std::endl;
-       // return;
-    }
-
-    // Step 2: Initialize an EXPLICIT_ACCESS structure for the new ACE
-    ea.grfAccessPermissions = GENERIC_READ | GENERIC_EXECUTE; // Grant read and execute permissions
-    ea.grfAccessMode = GRANT_ACCESS;                         // Allow access
-    ea.grfInheritance = SUB_CONTAINERS_AND_OBJECTS_INHERIT;  // Inheritance
-    ea.Trustee.TrusteeForm = TRUSTEE_IS_NAME;
-    ea.Trustee.TrusteeType = TRUSTEE_IS_WELL_KNOWN_GROUP;
-    ea.Trustee.ptstrName = (LPTSTR)_T("Everyone");           // Trustee is "Everyone"
-
-    // Step 3: Create a new ACL with the new ACE
-    result = SetEntriesInAcl(1, &ea, pOldDACL, &pNewDACL);
-    if (result != ERROR_SUCCESS) {
-        std::cerr << "Failed to set entries in ACL. Error: " << result << std::endl;
-        if(ERROR_FILE_NOT_FOUND == result) {
-            std::cerr << "ERROR_FILE_NOT_FOUND " << result << std::endl;
-        }
-        if (pSD) LocalFree(pSD);
-       // return;
-    }
-
-    // Step 4: Apply the new DACL to the object
-    result = SetNamedSecurityInfo(
-        (LPTSTR)dirPath,
-        SE_FILE_OBJECT,
-        DACL_SECURITY_INFORMATION,
-        NULL,      // Owner
-        NULL,      // Group
-        pNewDACL,  // New DACL
-        NULL       // SACL
-        );
-
-    if (result != ERROR_SUCCESS) {
-        std::cerr << "Failed to set security info. Error: " << result << std::endl;
-    } else {
-        std::cout << "Successfully added Everyone to the directory!" << std::endl;
-    }
-
-    // Cleanup
-    if (pSD) LocalFree(pSD);
-    if (pNewDACL) LocalFree(pNewDACL);
-}
 
 bool ShareDirectory::shared(const QString &path, QString &errMsg)
 {
     QString netName;
     bool ret = getNetName(path, netName, errMsg);
     if (!ret) {
-        qDebug() << "errMsg = " << errMsg;
+        qDebug() << "getNetName errMsg = " << errMsg;
         return false;
     }
 
+    bool exist = sharedArray.contains(netName);
+    if (exist) {
+        return true;
+    }
+
+    qDebug("Enter shared");
     DWORD parm_err;
     std::wstring wShareName = path.toStdWString();
     LMSTR share = const_cast<LMSTR>(wShareName.c_str());
@@ -212,8 +163,6 @@ bool ShareDirectory::shared(const QString &path, QString &errMsg)
     si.shi2_netname = lPackageName;
     si.shi2_path = share;
     si.shi2_passwd = NULL;
-    qDebug() << "shi2_path = " << path;
-    qDebug() << "shi2_netname = " << netName;
 
     LPCSTR sddl = "D:(A;OICI;GR;;;WD)"; // Everyone (WD) 读取权限 (GR)
     PSECURITY_DESCRIPTOR pSD = NULL;
@@ -242,6 +191,47 @@ bool ShareDirectory::shared(const QString &path, QString &errMsg)
     }
 }
 
+bool ShareDirectory::cancel(const QString &sharedName)
+{
+    auto wPkg = sharedName.toStdWString();
+    LMSTR lNetname= const_cast<LMSTR>(wPkg.c_str());
+    NET_API_STATUS nStatus = NetShareDel(NULL, lNetname, 0); // servername 为 NULL 表示本地计算机
+    if (nStatus == NERR_Success) {
+        qDebug() << "Success share del: " << nStatus;
+        return true;
+    } else {
+        qDebug() << "Failed share del: " << nStatus;
+        return false;
+    }
+}
+
+#include <QCoreApplication>
+bool ShareDirectory::cancelAll()
+{
+    if (sharedArray.isEmpty())
+        return true;
+
+    int status = 0;
+    do {
+        QString hostName = QHostInfo::localHostName();
+        search(hostName, status, false);
+        qApp->processEvents();
+    } while(NERR_Success != status);
+
+    bool result = false;
+    for (auto name : sharedArray) {
+        QString path = name.toString();
+        bool ret = cancel(path);
+        if (!ret) {
+            result = ret;
+            qDebug() << "path cancel error ret = " << result;
+        }
+    }
+
+    sharedArray = QJsonArray();
+    return result;
+}
+
 bool ShareDirectory::append(const QString &netname)
 {
     if (sharedArray.contains(netname))
@@ -251,9 +241,9 @@ bool ShareDirectory::append(const QString &netname)
     return true;
 }
 
-bool ShareDirectory::searchDirectories(const QString& hostName)
+void ShareDirectory::search(const QString& hostName, int& status, bool exist)
 {
-    qDebug("Enter searchDirectories");
+    qDebug("Enter search");
     qDebug() << "hostName = " << hostName;
     std::wstring wstrHostName = hostName.toStdWString();
     LMSTR share = const_cast<LMSTR>(wstrHostName.c_str());
@@ -263,17 +253,25 @@ bool ShareDirectory::searchDirectories(const QString& hostName)
     do {
         DWORD entriesRead = 0, totalEntries = 0;
         LPBYTE buffer = NULL;
-        NET_API_STATUS status = NetShareEnum(share, 2, &buffer, MAX_PREFERRED_LENGTH, &entriesRead, &totalEntries, &resumeHandle);
-        if (status == NERR_Success || status == ERROR_MORE_DATA) {
-            // 处理数据
+        NET_API_STATUS ret = NetShareEnum(share, 2, &buffer, MAX_PREFERRED_LENGTH, &entriesRead, &totalEntries, &resumeHandle);
+        if (NERR_Success == ret || ERROR_MORE_DATA == ret) {
+            status = ret;
             qDebug() << "entriesRead: " << entriesRead;
             SHARE_INFO_2* shareInfo = (SHARE_INFO_2*)buffer;
             for (DWORD i = 0; i < entriesRead; i++) {
                 QString netname = QString::fromStdWString(shareInfo[i].shi2_netname);
                 QString pathname = QString::fromStdWString(shareInfo[i].shi2_path);
-                if (!netname.isEmpty() && netname.back() != "$") {
-                    sharedArray.append(netname);
-                    qDebug() << "share netname: " << netname  << "share pathname: " << pathname;
+                QFileInfo fileInfo(pathname);
+                if (exist) {
+                    if (!netname.isEmpty() && netname.back() != "$" && fileInfo.exists()) {
+                        sharedArray.append(netname);
+                        qDebug() << "share netname: " << netname  << "share pathname: " << pathname;
+                    }
+                } else {
+                    if (!netname.isEmpty() && netname.back() != "$") {
+                        sharedArray.append(netname);
+                        qDebug() << "share netname: " << netname  << "share pathname: " << pathname;
+                    }
                 }
             }
         } else {
@@ -285,12 +283,11 @@ bool ShareDirectory::searchDirectories(const QString& hostName)
         }
 
     } while (resumeHandle != 0);
-    return sharedArray.size();
 }
 
 void ShareDirectory::mapDevice(const QString &deviceName)
 {
-    qDebug("Enter mapDevice");
+    qDebug("Enter mapDevice QString");
     QString remote = QString("\\\\%1").arg(deviceName);
     qDebug() << "remote = " <<remote;
     QDir dir(remote);
@@ -337,17 +334,77 @@ void ShareDirectory::mapDevice(const QString &deviceName)
     }
 }
 
-void ShareDirectory::cancelDevice(const QString &deviceName, bool forceDisconnect)
+void ShareDirectory::mapDevice(const QJsonObject &deviceObj)
 {
-    qDebug("Enter mapDevice");
+   // qDebug("Enter mapDevice QJsonObject");
+    QString deviceName = deviceObj["devicename"].toString();
+    QJsonArray shareDirArr = deviceObj["sharedirectory"].toArray();
+    QString remote = QString("\\\\%1").arg(deviceName);
+  //  qDebug() << "remote = " <<remote;
+    QDir dirRemote(remote);
+    if (!dirRemote.exists()) {
+        qDebug() << "Remote path is empty.";
+        return;
+    }
+
+ //   qDebug() << "shareDirArr = " << shareDirArr;
+    for(const auto& shareDir : shareDirArr)    {
+        // 检查共享目录是否已映射过
+        QString baseName(shareDir.toString()); //
+        QString path(QDir::toNativeSeparators(dirRemote.absoluteFilePath(baseName)));
+        bool mapped = remote2Local.contains(path);
+        if (mapped) {
+            continue;
+        }
+
+        // 检查驱动器号是否已占用
+        QString driveLetter = findAvailableDriveLetter();
+        if (driveLetter.isEmpty()) {
+            qDebug() << "No available drive letter.";
+            return;
+        } else {
+            qDebug() << "find disk := " << driveLetter;
+        }
+
+        // qDebug() << "path = " << path;
+        // qDebug() << "baseName = " << baseName;
+        NETRESOURCEA nr;
+        ZeroMemory(&nr, sizeof(NETRESOURCEA));
+        nr.dwType = RESOURCETYPE_DISK;
+        nr.lpLocalName =  driveLetter.toLatin1().data();
+        nr.lpRemoteName = path.toLocal8Bit().data();
+        nr.lpProvider = nullptr;
+        // 调用 WNetAddConnection2A
+        DWORD result = WNetAddConnection2A(&nr, nullptr, nullptr, 0);  // 默认标志为 0
+        if (result == NO_ERROR) {
+            remote2Local[path] = driveLetter;
+            qDebug() << "Drive mapped successfully: " << driveLetter;
+        } else {
+            qDebug() << "Failed to map drive. Error code:" << result;
+        }
+    }
+}
+
+bool ShareDirectory::cancelDevice(const QString &deviceName, bool forceDisconnect)
+{
+    if (0 == remote2Local.size()) {
+        return false;
+    }
+
+    if (deviceName.isEmpty()) {
+        return false;
+    }
+
+    qDebug("Enter cancelDevice");
     QString remote = QString("\\\\%1").arg(deviceName);
     qDebug() << "remote = " <<remote;
     QDir dir(remote);
     if (!dir.exists()) {
         qDebug() << "Remote path is empty.";
-        return;
+        return false;
     }
 
+    bool ret = true;
     auto entryList = dir.entryInfoList();
     for(const auto& dirInfo : entryList)    {
         // 检查共享目录是否已映射过
@@ -362,22 +419,25 @@ void ShareDirectory::cancelDevice(const QString &deviceName, bool forceDisconnec
         DWORD dwResult = WNetCancelConnection2A(remote2Local.value(path).toStdString().c_str(), 0, forceDisconnect);
         if (NO_ERROR == dwResult) {
             remote2Local.remove(path);
-            qDebug() << "Disconnected from " << path << " successfully.";
+            qDebug() << "Cancel connection from " << path << " successfully.";
         } else {
-            qDebug() << "Failed to disconnect from " << path << ". Error code: " << dwResult;
-            QTimer *timer = new QTimer(this);
-            connect(timer, &QTimer::timeout, this, [=](){
-                static int count = 0;
-                DWORD dwResult = WNetCancelConnection2A(remote2Local.value(path).toStdString().c_str(), 0, forceDisconnect);
-                if (NO_ERROR == dwResult) {
-                    timer->stop();
-                    qDebug() << "Disconnected from " << path << " successfully." << "count = " << ++count;
-                } else {
-                    qDebug() << "next Failed to disconnect from " << path << ". Error code: " << dwResult;
-                }
-            });
+            ret = false;
+            qDebug() << "Failed to cancel connection from " << path << ". Error code: " << dwResult;
+            // QTimer *timer = new QTimer(this);
+            // connect(timer, &QTimer::timeout, this, [=](){
+            //     static int count = 0;
+            //     DWORD dwResult = WNetCancelConnection2A(remote2Local.value(path).toStdString().c_str(), 0, forceDisconnect);
+            //     if (NO_ERROR == dwResult) {
+            //         timer->stop();
+            //         qDebug() << "Disconnected from " << path << " successfully." << "count = " << ++count;
+            //     } else {
+            //         qDebug() << "next Failed to disconnect from " << path << ". Error code: " << dwResult;
+            //     }
+            // });
         }
     }
+
+    return ret;
 }
 
 
@@ -395,32 +455,24 @@ bool ShareDirectory::getNetName(const QString &path, QString &netname, QString &
     }
 
     QString pathDisk = path.at(0);
-    qDebug() << "pathDisk = " << pathDisk;
     QFileInfoList drives = QDir::drives();
     auto it = std::find_if(drives.begin(), drives.end(), [=](const QFileInfo& drive) {
         return drive.absolutePath().contains(pathDisk, Qt::CaseInsensitive);
     });
 
     if (it == drives.end()) {
-        qDebug("disk is error");
+        qDebug("pathDisk is not exist");
+        return false;
     }
 
     int lastIndex = path.lastIndexOf(QDir::separator());
+    if (lastIndex == -1) {
+        qDebug() << path << "path is invalid";
+        return false;
+    }
     netname = path.mid(lastIndex + 1);  // 获取当前文件夹名
     // QString name(path);
     // netname = name.replace("\\", "_", Qt::CaseInsensitive);
-    qDebug() << "netname = " << netname;
-    qDebug() << "sharedArray = " << sharedArray;
-    qDebug() << "oldName = " << netname;
-    // 遍历 sharedArray 查找是否有相同文件夹
-    if (sharedArray.contains(netname)) {
-        // 生成新文件名
-        errMsg = "netname is exist";
-        return false;
-    } else {
-        return true;
-    }
-
     return true;
 }
 
@@ -456,34 +508,6 @@ QString ShareDirectory::findAvailableDriveLetter() {
         return QString("%1:").arg(drive);
     }
     return QString(); // 未找到可用驱动器号
-}
-
-void ShareDirectory::setFolder(const QString &folderName) {
-
-    QString path(QDir::toNativeSeparators(folderName));
-    QString driveLetter = findAvailableDriveLetter();
-    qDebug() << "driveLetter = " << driveLetter;
-    if (driveLetter.isEmpty()) {
-        qDebug() << "No available drive letter.";
-        return;
-    }
-
-    qDebug() << "path = " << path;
-    // 配置 NETRESOURCE 结构体
-    NETRESOURCEA nr;
-    ZeroMemory(&nr, sizeof(NETRESOURCEA));
-    nr.dwType = RESOURCETYPE_DISK;
-    nr.lpLocalName =  driveLetter.toLatin1().data();
-    nr.lpRemoteName = QDir::toNativeSeparators(path).toLocal8Bit().data();
-    nr.lpProvider = nullptr;
-
-    // 调用 WNetAddConnection2A
-    DWORD result = WNetAddConnection2A(&nr, nullptr, nullptr, 0);  // 默认标志为 0
-    if (result == NO_ERROR) {
-        qDebug() << "Drive mapped successfully: " << driveLetter;
-    } else {
-        qDebug() << "Failed to map drive. Error code:" << result;
-    }
 }
 
 bool ShareDirectory::containMapped(const QString &remoteName)
@@ -547,5 +571,3 @@ QMap<QString, QString> ShareDirectory::enumMappedNetworkDrives() {
     WNetCloseEnum(hEnum);
     return remote2Local;
 }
-
-

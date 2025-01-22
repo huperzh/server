@@ -5,6 +5,7 @@
 #include <QJsonArray>
 #include <QMainWindow>
 #include <QHostAddress>
+#include <QEventLoop>
 #include "udpbroadcast.h"
 #include "sharedirectory.h"
 
@@ -16,6 +17,7 @@ QT_END_NAMESPACE
 
 class BroadcastHelper;
 class QUdpSocket;
+class QCloseEvent;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -59,6 +61,10 @@ private slots:
 
     void on_pushButtonCancelConnect_clicked();
 
+    void on_checkBoxEnableShared_clicked(bool checked);
+
+    void closeEvent(QCloseEvent *);
+
 private:
     void getNetPC();
     bool isLocalAddress(const QHostAddress &addr);
@@ -70,5 +76,8 @@ private:
     QMap<QString, QString> netNameToPath;
     UDPBroadcast udpBroadCast;
     ShareDirectory shareDirectory;
+    QTimer *timerApp = nullptr;
+    bool startClose = false;
+    QCloseEvent *closeEv;
 };
 #endif // MAINWINDOW_H

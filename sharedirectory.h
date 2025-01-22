@@ -10,16 +10,48 @@ class ShareDirectory : public QObject
 public:
     explicit ShareDirectory(QObject *parent = nullptr);
     const QJsonArray& getArray() const { return sharedArray; }
-    bool shared(const QString &path, QString &errMsg);
-    bool searchDirectories(const QString& hostName);
     /**
-     * @brief 共享目录
-     * @param 远程共享目录
-     * @return 存在 true
+     * @brief  共享当前目录
+     * @param  输入 本地目录path, 设置为共享目录
+     * @return 成功返回 true 否则 false
+     */
+    bool shared(const QString &path, QString &errMsg);
+    /**
+     * @brief  取消共享目录
+     * @param  输入本地共享目录path
+     * @return bool
+     */
+    bool cancel(const QString &path);
+    /**
+     * @brief  取消全部共享目录
+     * @param  输入本地设备名称
+     * @return bool
+     */
+    bool cancelAll();
+    /**
+     * @brief  查询当前共享目录列表
+     * @param  输入 当前主机名称
+     * @return 无
+     */
+    void search(const QString& hostName, int& status, bool exist = true);
+    /**
+     * @brief  映射网络驱动器
+     * @param  输入主机名称
+     * @return 无
      */
     void mapDevice(const QString &deviceName);
-    void cancelDevice(const QString &networkPath, bool forceDisconnect = false);
-    void setFolder(const QString &folderName);
+    /**
+     * @brief  映射网络驱动器
+     * @param  输入远端共享目录列表数据
+     * @return 无
+     */
+    void mapDevice(const QJsonObject &remoteRes);
+    /**
+     * @brief  取消映射网络驱动器
+     * @param  输入远端共享目录列表数据
+     * @return bool
+     */
+    bool cancelDevice(const QString &networkPath, bool forceDisconnect = true);
     /**
      * @brief 查询共享目录是否已经存在映射
      * @param 远程共享目录
